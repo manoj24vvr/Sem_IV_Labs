@@ -1,0 +1,22 @@
+|--- checkin_acc <= 1.50
+|   |--- duration <= 22.50
+|   |   |--- credit_history <= 1.50
+|   |   |   |--- class: 1
+|   |   |--- credit_history >  1.50
+|   |   |   |--- class: 0
+|   |--- duration >  22.50
+|   |   |--- savings_acc <= 2.50
+|   |   |   |--- class: 1
+|   |   |--- savings_acc >  2.50
+|   |   |   |--- class: 0
+|--- checkin_acc >  1.50
+|   |--- inst_plans <= 1.50
+|   |   |--- age <= 44.50
+|   |   |   |--- class: 0
+|   |   |--- age >  44.50
+|   |   |   |--- class: 0
+|   |--- inst_plans >  1.50
+|   |   |--- age <= 30.50
+|   |   |   |--- class: 0
+|   |   |--- age >  30.50
+|   |   |   |--- class: 0
