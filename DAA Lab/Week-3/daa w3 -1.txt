@@ -1,0 +1,346 @@
+
+ques 1-
+#include<iostream>
+using namespace std;
+
+int main(){
+        int n, arr[100];
+        cout<<"Enter Array Size: ";
+        cin>>n;
+        cout<<"Enter Array Elements: ";
+        for(int i = 0; i<n; i++)
+                cin>>arr[i];
+        for(int i=0; i<n; i++){
+                int narr = arr[i];
+                int j= i;
+        while(arr[j-1] > narr && j>0){
+                arr[j] = arr[j-1];
+                j--;}
+        arr[j] = narr;
+}
+cout<<"After Insertion Sort, Array: ";
+for(int i = 0; i<n; i++)
+cout<< arr[i]<<" ";
+cout<<endl;
+return 0;
+}
+
+output-
+Enter Array Size: 3
+Enter Array Elements: 12 2 23
+After Insertion Sort, Array: 2 12 23 
+
+
+
+
+
+
+QUES 3-
+#include<bits/stdc++.h>
+using namespace std;
+
+int partition(int a[], int start, int end){
+        int pivot = a[start];
+        int cnt =0;
+        for(int i =start+1; i<=end; i++){
+                if(a[i] <= pivot)
+                        cnt++;}
+        int pi = start + cnt;
+        int t = a[pi];
+        a[pi] = a[start];
+        a[start] = t;
+        int i = start, j = end;
+        while(i<pi && j>pi){
+                while(a[i] <= pivot)
+                        i++;
+                while(a[j]>pivot)
+                        j--;
+                if(i<pi && j>pi){
+                        int t = a[i];
+                        a[i] = a[j];
+                        a[j] = t;
+                        i++;
+                        j--;
+                }
+        }
+        return pi;
+}
+void qs(int a[], int start, int end)
+{
+        if(start >= end)
+                return;
+        int p = partition(a, start, end);
+        qs(a, start, p-1);
+        qs(a, p+1, end);
+}
+
+int main(){
+        int n;
+        cout<<"Enter Size: "<<endl;
+        cin>>n;
+        int a[n];
+        cout<<"Enter Array: "<<endl;
+        for(int i=0; i<n; i++)
+                cin>>a[i];
+        qs(a,0,n-1);
+        cout<<"Sorted Array: "<<endl;
+        for(int i=0; i<n; i++)
+                cout<<a[i]<<" ";
+        return 0;
+}
+
+./a.out
+
+OUTPUT-
+
+Enter Size: 
+4
+Enter Array: 
+12 2 3 1
+Sorted Array: 
+1 2 3 12 
+
+
+ques 4-
+
+#include <iostream>
+using namespace std;
+
+void swap(int &a, int &b)
+{
+        int temp;
+        temp = a;
+        a = b;
+        b = temp;
+}
+
+void display(int *array, int size)
+{
+        for(int i=0;i<size;i++)
+        { cout << array[i] << " "; }
+        cout << endl;
+}
+
+void merge(int *array, int l, int m, int r)
+{
+        int i, j, k, nl, nr;
+        nl = m-l+1;
+        nr = r-m;
+        int larr[nl];
+        int rarr[nr];
+
+        for(i=0;i<nl;i++)
+        { larr[i] = array[l+i]; }
+        for(j=0;j<nr;j++)
+        { rarr[j] = array[m+1+j]; }
+
+        i=0; j=0; k=l;
+
+        while(i<nl && j<nr)
+        {
+                if(larr[i] <= rarr[j])
+                {
+                        array[k] = larr[i];
+                        i++;
+                }
+                else
+                {
+                        array[k] = rarr[j];
+                        j++;
+                }
+                k++;
+        }
+        while(i<nl)
+        {
+                array[k] = larr[i];
+                i++; k++;
+        }
+        while(j<nr)
+        {
+                array[k] = rarr[j];
+                j++; k++; }
+}
+
+void mergesort(int *array, int l, int r)
+{
+        int m;
+
+        if(l<r)
+        {
+                m = l+(r-l)/2;
+                mergesort(array,l,m);
+                mergesort(array,m+1,r);
+                merge(array,l,m,r);
+        }
+}
+
+int main()
+{
+        int n, i;
+        cout << "Enter the number of elements: " << endl;
+        cin >> n;
+
+        int arr[n];
+        cout << "Enter elements: " << endl;
+        for(i=0;i<n;i++)
+        { cin >> arr[i]; }
+
+        mergesort(arr,0,n-1);
+
+        cout << "Sorted array: " << endl;
+        display(arr, n);
+
+        return 0;
+}
+
+
+output-
+Enter the number of elements: 
+4
+Enter elements: 
+12 2 23 1
+Sorted array: 
+1 2 12 23 
+
+
+
+
+
+
+
+
+
+
+ques 2-1
+
+#include <iostream>
+using namespace std;
+
+int main()
+{
+        int m, n, matrix[100][100], i, j, k;
+
+        cout << "Enter number of vertices: " << endl;
+        cin >> m;
+        cout << "Enter number of edges: " << endl;
+        cin >> n;
+        cout << "Enter edges: " << endl;
+        for(k=0;k<m;k++)
+        {
+                cin >> i;
+                cin >> j;
+                matrix[i][j] = 1;
+        }
+
+        int v, visited[100], visit[100], stack[100], top, topo[100], ctopo=0;
+
+        cout << "Enter initial vertex: " << endl;
+        cin >> v;
+
+        cout << "Visited vertices: " << endl;
+        topo[ctopo] = v;
+        ctopo++;
+        visited[v] = 1;
+        k = 1;
+
+        while(k<n)
+        {
+                for(j=n;j>=1;j--)
+                {
+                        if(matrix[v][j]!=0 && visited[j]!=1 && visit[j]!=1)
+                        {
+                                visit[j] = 1;
+                                stack[top] = j;
+                                top++;
+                        }
+                }
+
+                v = stack[--top];
+                topo[ctopo] = v;
+                ctopo++;
+                k++;
+                visit[v] = 0;
+                visited[v] = 1;
+        }
+
+
+        for(i=0;i<ctopo;i++)
+        { cout << topo[i] << " "; }
+
+        return 0;
+}
+
+output-
+
+Enter number of vertices: 
+4
+Enter number of edges: 
+4
+Enter edges: 
+1 1
+1 3
+2 2 
+4 3
+Enter initial vertex: 
+1
+Visited vertices: 
+1 3 0 0
+
+
+
+ques 2 -2
+#include <iostream>
+using namespace std;
+
+int main()
+{
+        int i, j, k, n, a[100][100];
+        int indeg[100] = {0};
+        int flag[100] = {0};
+        int count = 0;
+
+        cout << "Enter number of vertices: " << endl;
+        cin >> n;
+
+        cout << "Enter the adjacency matrix: " << endl;
+        for(i=0;i<n;i++)
+        {       for(j=0;j<n;j++)
+                { cin >> a[i][j]; }
+        }
+
+        for(i=0;i<n;i++)
+        {       for(j=0;j<n;j++)
+                { indeg[i] += a[j][i]; }
+        }
+
+        cout << "Topologically sorted: " << endl;
+        while(count<n)
+        {
+                for(k=0;k<n;k++)
+                {
+                        if((indeg[k]==0) && (flag[k]==0))
+                        {
+                                cout << k+1 << " ";
+                                flag[k] =1;
+
+                                for(i=0;i<n;i++)
+                                {       if(a[k][i]==1)
+                                        {
+                                                a[k][i] = 0;
+                                                indeg[i]--;
+                                        }
+                                }
+
+                                count++;
+                                break;
+                        }
+                }
+        }
+
+        return 0;
+}
+
+
+
+
+

@@ -1,0 +1,59 @@
+select * from client;
+
+select name,phone,email from emp where designation = 'DEVELOPER';
+
+select name from emp where empcode = 106;
+
+select name,email from emp where designation = 'TECHNICAL HEAD' and qualification ='BTECH';
+
+select name from emp where salary >= 100000 and salary <= 200000;
+select name from emp where salary between 100000 and 200000;
+
+SELECT SKILLID FROM EMP_SKILL WHERE EMPNO=101;
+
+select skillname from skill where skillID in (select skillID from emp_skill where empno = 101);
+
+select empcode from work_exp where clientID in ('C2','C1') and rating in ('A','B');
+
+select name from emp where empcode in (select empcode from work_exp where clientID = 'C2' and rating ='B');
+
+select count(empno) from family_dependents where empno = ( select empcode from emp  where name = 'RAVI');
+
+select name,designation,salary*12 as Annual_Salary from emp;
+
+select e.name,f.dep_name from emp e LEFT JOIN family_dependents f on e.empcode = f.empno;
+
+select e.name, p.prj_name from emp e, prj_details p where e.empcode = p.lead_by_empcode;
+
+select e.name,e.salary,p.* from emp e, pay_check p where e.empcode = p.empcode and pay_date like '%MAR%';
+
+select e.name,h.name as Higher_Authority_Name,e.phone from emp e, emp h where e.reports_to = h.empcode;
+
+select * from prj_details order by ACTUAL_END_DATE desc;
+
+select e.name,s.skillname from emp e, skill s, emp_skill p where e.empcode = p.empno and p.skillID = s.skillID order by p.empno asc, p.skill_experience desc;
+
+select e.name,f.dep_name,age from emp e, family_dependents f where e.empcode = f.empno and f.relationship = 'SON' order by e.name asc, age desc;
+
+select e.name, p.prj_name from emp e, prj_details p where e.empcode = p.lead_by_empcode order by e.name asc, p.prj_name desc;
+
+select name,prj_name from emp,prj_details where empcode = lead_by_empcode and prj_name = 'SPYDER'
+UNION
+select name,prj_name from emp,prj_details where empcode = lead_by_empcode and prj_name = 'APOLLO';
+
+select e.name from emp e,skill s,emp_skill p where e.empcode=p.empno and s.skillID=p.skillID and s.skillname='Oracle'
+INTERSECT
+select e.name from emp e,skill s,emp_skill p where e.empcode=p.empno and p.skillID=s.skillID and s.skillname='AZURE';
+
+select e.name from emp e, prj_details p where e.empcode = p.lead_by_empcode
+MINUS
+select e.name from emp e, prj_details p where e.empcode = p.lead_by_empcode and p.prj_name = 'JUPITER';
+
+select name from emp where reports_to is null;
+
+select name,email from emp where name like ('A%');
+
+select prj_name from prj_details where start_date between '01/Jan/2020' and '31/Dec/2020';
+
+select e.name from emp e,skill s,emp_skill p where e.empcode=p.empno and p.skillID=s.skillID and s.skillname in 
+(select s.skillname from emp e,skill s,emp_skill p where e.empcode=p.empno and p.skillID=s.skillID and e.empcode = 101);

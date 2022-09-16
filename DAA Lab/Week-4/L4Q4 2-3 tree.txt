@@ -1,0 +1,147 @@
+#include <iostream>
+using namespace std;
+
+typedef struct node{
+        int ldata;
+        int rdata;
+        struct node *mid;
+        struct node *left;
+        struct node *right;
+}node_t;
+node_t *newNode(int ldata, int rdata, node_t *left, node_t *mid, node_t *right){
+        node_t *n;
+        n = new node_t;
+        n->left = left;
+        n->mid = mid;
+        n->right = right;
+        n->ldata = ldata;
+        n->rdata = rdata;
+        return n;
+}
+bool isLeaf(node_t *n){
+        bool leaf = false;
+        if (n!=NULL ){
+                leaf = (n->left ==NULL) && (n->mid ==NULL) && (n->right ==NULL);
+        }
+        return leaf;
+}
+node_t *add(node_t *t, node_t *n) {
+        node_t *res = NULL;
+        node_t *tmp = NULL;
+        if (t->rdata == -1) {
+                if (t->ldata < n->ldata) {
+                        t->rdata = n->ldata;
+                        t->mid = n->left;
+                        t->right = n->mid;
+                } else {
+                        t->rdata = t->ldata;
+                        t->right = t->mid;
+                        t->ldata = n->ldata;
+                        t->mid = n->mid;
+                }
+                res = t;
+        } else if (t->ldata >= n->ldata) { // Add left
+                tmp = newNode(t->ldata, -1, n, t, NULL);
+                n->left = t->left;
+                t->left = t->mid;
+                t->mid = t->right;
+                t->right = NULL;
+                res = tmp;
+        } else if (t->rdata >= n->ldata) { // Add middle
+                n->mid = newNode(t->rdata, -1, n->mid, t->right, NULL);
+                n->left = t;
+                t->rdata = -1;
+                t->right = NULL;
+                res = n;
+        } else {
+                tmp = newNode(t->rdata, -1, t, n, NULL);
+                n->left = t->right;
+                t->right = NULL;
+                t->rdata = -1;
+                res = tmp;
+        }
+}
+        return res;
+}
+node_t *insert(node_t *r, int d) {
+        node_t *res = NULL;
+        if (r == NULL) {
+                res = newNode(d, -1, NULL, NULL, NULL);
+        } else if (isLeaf(r)) {
+                res = add(r, newNode(d, -1, NULL, NULL, NULL));
+        } else if (d < r->ldata) {
+                res = insert(r->left, d);
+                if (res == r->left) {
+                        res = r;
+                } else {
+                        res = add(r, res);
+                }
+        } else if (r->rdata == -1 || d < r->rdata) {
+                res = insert(r->mid, d);
+                if (res == r->mid) {
+                        res =  r;
+                } else {
+                        res = add(r, res);
+                }
+        } else {
+                res = insert(r->right, d);
+                if (res == r->right) {
+                        res = r;
+                } else {
+                        res = add(r, res);
+                }
+        }
+        return res;
+}
+
+node_t *getChildren(node_t * Tree){
+        int child;
+        cout<<"Next ele please"<<endl;
+        cin>>child;
+        Tree = insert(Tree, child);
+        return Tree;
+}
+
+void printNode(node_t *node){
+        if (node == NULL){
+                cout<<"--";
+        }else{
+                cout<<node->ldata<<" , "<<node->rdata;//
+        }
+}
+
+void printTree(node_t *tree){
+        if (tree != NULL) {
+                printNode(tree);
+                cout << " L: "; printNode(tree->left);
+                cout << " M: "; printNode(tree->mid);
+                cout << " R: "; printNode(tree->right); cout <<endl;
+                printTree(tree->left);
+                printTree(tree->mid);
+                printTree(tree->right);
+        }
+}
+
+node_t *createTree(node_t *tree){
+        int num;
+        cout<<"Number of elements please: "<<endl;
+        cin>> num;
+        cout << "Root element please: "<<endl;
+        cin>> tree->ldata;
+        for (int i = num - 1; i > 0; i--){
+                tree = getChildren(tree);
+        }
+        return tree;
+}
+int main(){
+        int ele;
+        node_t *tree = newNode(-1, -1, NULL, NULL, NULL);
+        tree = createTree(tree);
+        cout<<"The tree is"<<endl;
+        printTree(tree);
+        cout<<"Add an element: "<<endl;
+        cin>>ele;
+        insert(tree,ele);
+        printTree(tree);
+        return 0;
+}

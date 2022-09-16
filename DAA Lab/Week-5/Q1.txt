@@ -1,0 +1,148 @@
+#include <iostream>
+using namespace std;
+int h[50], i, j, k ,n,v,heap;
+
+void heapBU(){
+for (i=n/2; i>=1; i--){
+k = i; v = h[k];
+heap = false;
+while(!heap && 2*k <=n){
+j = 2*k;
+if(j<n){
+if (h[j] < h[j+1]) j=j+1;
+}
+if (v>=h[j]){
+heap = true;
+}else{
+h[k] = h[j];
+k = j;
+}
+}
+h[k] = v;
+}
+}
+
+int main()
+{
+cout<<"Give number of elements"<<endl;
+cin>>n;
+cout<<"Enter the elements"<<endl;
+for(int i = 1; i<=n; i++){
+cin>>h[i];
+}
+heapBU();
+cout<<"Elements of bottom-up heap are: "<<endl;
+for(k =1; k<=n; k++){
+cout<<h[k]<<" ";
+}
+cout<<endl;
+return 0;
+}
+
+
+
+
+
+______________________________________________________
+
+shre
+
+#include <iostream>
+using namespace std;
+
+void heap_sort(int arr[], int n) {
+        int n_copy = n;
+        for(int i = 1; i < n; i++) {
+                for(int j = n_copy-1; j >= 1; ) {
+                        int parent_ind = (j - 1) / 2;
+                        int left_ind = parent_ind * 2 + 1;
+                        int right_ind = parent_ind * 2 + 2;
+                        if(right_ind > j)
+                                right_ind = j;
+                        int max_child_ind;
+                        if(arr[left_ind] > arr[right_ind])
+                                max_child_ind = left_ind;
+                        else
+                                max_child_ind = right_ind;
+                        if(arr[max_child_ind] > arr[parent_ind]) {
+                                int temp = arr[parent_ind];
+                                arr[parent_ind] = arr[max_child_ind];
+                                arr[max_child_ind] = temp;
+                        }
+                        if(j % 2 == 0)
+                                j -= 2;
+                        else
+                                j -= 1;
+                }
+                int temp = arr[0];
+                arr[0] = arr[n_copy - 1];
+                arr[n_copy - 1] = temp;
+                n_copy --;
+        }
+}
+
+int main() {
+        int arr[100], n;
+        cout << "Enter the array size: ";
+        cin >> n;
+        cout << "Enter the array elements: ";
+        for(int i = 0; i < n; i++)
+                cin >> arr[i];
+        heap_sort(arr, n);
+        cout << "The sorted array after heap sort is: ";
+        for(int i = 0; i < n; i++)
+                cout << arr[i] << " ";
+        cout << endl;
+        return 0;
+}
+
+____________________________________________________________________________________________________
+
+using namespace std;
+void HeapBottomUp(int a[],int n)
+{
+ for(int i = 0; i < n ; i++)
+ {
+  if(a[i] > a[(i-1)/2]) {
+   int j = i;
+   while(a[j] > a[(j-1)/2])
+   {
+    swap(a[j],a[(j-1)/2]);
+    j = (j-1)/2;
+   }
+  }
+ }
+}
+
+int main(){
+ cout<<"The Number of elements - \n";
+ int n;cin>>n;
+ cout<<"The array - \n";
+ int a[n];
+ for(int i = 0 ; i < n;i++)
+ {
+  cin>>a[i];
+ }
+ HeapBottomUp(a,n);
+ for(int i=0;i<n;i++)
+ {
+  cout<<a[i]<<' ';
+ }
+ int b[n];
+ for(int i=n-1;i>=0;i++)
+ {
+  b[i] = a[0];
+  HeapBottomUp(a,n);
+  a[0] =
+# 37 "L5_Q1.cpp" 3 4
+        (-0x7fffffff - 1)
+# 37 "L5_Q1.cpp"
+               ;
+ }
+ for(int i = 0 ; i < n ; i++)
+ {
+  cout<<b[i]<<' ';
+ }
+ cout<<'\n';
+ return 0;
+}

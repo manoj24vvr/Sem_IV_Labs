@@ -1,0 +1,36 @@
+#include <iostream>
+using namespace std;
+
+int n, a[10][10], b[10][10];
+
+void TC(){
+        int i, j, k;
+        for (i = 0; i<n; i++)
+                for(j = 0; j<n; j++)
+                        b[i][j] = a[i][j];
+        for (k =0; k<n; k++)
+                for(i = 0; i<n; i++)
+                        for(j=0; j<n;j++)
+                                if (b[i][k] ==1 && b[k][j] ==1)
+                                        b[i][j] =1;
+}
+int main(){
+        int i,j;
+        cout<<"Enter dimenson of adj matrix "<<endl;
+        cin>>n;
+        cout<<"Enter elements : "<<endl;
+        for (i = 0; i<n; i++)
+                for( j =0; j<n; j++)
+                        cin>>a[i][j];
+
+
+        TC();
+        cout<<endl<<"The transitive closure matrix : "<<endl;
+        for( i = 0; i<n; i++){
+                for ( j = 0; j<n; j++)
+                        cout<<b[i][j];
+                        cout<<endl;
+
+        }
+        return 0;
+}

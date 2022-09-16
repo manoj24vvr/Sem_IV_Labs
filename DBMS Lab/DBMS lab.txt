@@ -1,0 +1,1769 @@
+create table EMP(
+EMPCODE number(3) CONSTRAINT PK_EMPNO Primary key,
+Name varchar2(10),
+QUALIFICATION varchar2(7) CONSTRAINT VALID_QUALIF check(Qualification in ('BTECH','MTECH','MSC','MCA','PHD')),
+PHONE number(10),
+EMAIL Varchar2(20) CONSTRAINT EMAIL_DOMAIN Check(Email like '%@digisol.com'),
+DESIGNATION VARCHAR2(20) CONSTRAINT VALID_DESIGNATION Check(DESIGNATION IN ('DEVELOPER','PROJECT LEADER','PROJECT MANAGER','TECHNICAL HEAD','PROJECT DIRECTOR','PROJECT LEADER','CEO')),
+SALARY NUMBER(7) CONSTRAINT SALARY_RANGE CHECK(salary between 97000 and 300000));
+
+
+
+create table family_dependents(
+EMPNO references EMP(EMPCODE),
+DEP_NAME varchar(20),
+relationship varchar(16),
+age number(3) constraint valid_age check(age between 1 and 130),
+primary key(empno,dep_name));
+
+
+create table medical_policy(
+empno references emp(EMPCODE),
+policyno varchar(7) constraint C_PNo check(policyno like 'MED%'),
+premium number(7) constraint C_P check(premium >1000),
+policydate date,
+constraint PK_MP primary key(empno,policyno));
+
+
+
+create table pay_check(
+empcode references emp(EMPCODE),
+pay_date date,
+regular_increment number(4) constraint VALID_REGU_INCREMENT check(regular_increment in (2000,3000,5000,7000,9000)),
+performance_incentive number(5),
+DA number(7),
+PF number(6),
+other_incentives number(4),
+advanc_tax number(5),
+primary key(empcode,pay_date));
+
+
+create table skill(
+skillID char(3) CONSTRAINT UNQ_SKILLID UNIQUE,
+SKILLNAME Varchar(20) CONSTRAINT UNQ_SKILLNAME UNIQUE);
+
+
+create table emp_skill(
+EMPNO number(3) CONSTRAINT FK_EMPNO References emp(empcode),
+skillID char(3) CONSTRAINT FK_SKILLID references skill (skillID) on delete cascade,
+skill_experience number(3) check(skill_experience > 0));
+
+
+create table client(
+clientid char(3) constraint PK_CLIENTID primary key check(clientid like 'C%'),
+name varchar2(10),
+phone char(14) constraint phone_format check(phone like ('+91-%') or phone like ('+81-%') or phone like ('+31-%') or phone like ('+48-%') or phone like ('+44-%')));
+
+
+create table PRJ_DETAILS(
+PRJID char(3) CONSTRAINT PK_PRJID check(PRJID LIKE 'P%') Primary key,
+PRJ_NAME Varchar2(10),
+START_DATE Date,
+END_DATE Date,
+ACTUAL_END_DATE DATE,
+LEAD_BY_EMPCODE number(3) CONSTRAINT FK_LEAD_EMP References EMP,
+BUDGET_ALLOCATED number(10,1),
+ACTUAL_BUDGET number(10,1),
+CONSTRAINT END_DATE_GREATER_START_DATE CHECK(END_DATE > START_DATE),
+check(ACTUAL_END_DATE >= END_DATE));
+
+
+create table work_exp(
+empcode number(3) references emp(EMPCODE),
+prjid char(3) references prj_details(PRJID),
+work_experience number(2) check(work_experience >= 0) not null,
+clientid references client(ClientID) on delete set null,
+rating char(1) check(rating in ('A','B','C')),
+primary key(empcode,prjid));
+
+
+DESC emp;
+desc family_dependents;
+desc medical_policy;
+desc pay_check;
+desc skill;
+desc emp_skill;
+desc client;
+desc PRJ_DETAILS;
+
+1.1
+
+alter table emp
+add (reports_to number(3) constraint fk_reports_to_empcode references emp(EMPCODE));
+
+1.2
+
+alter table skill
+add constraint skillid_start_with_S
+check(skillid like 'S%');
+
+1.3
+
+alter table emp_skill
+add constraint pk_empno_skillid
+primary key(empno,skillid);
+
+1.4
+
+alter table prj_details
+add constraint unq_PRJ_NAME
+UNIQUE(PRJ_NAME);
+
+1.5
+
+ALTER TABLE CLIENT
+ADD (EMAIL varchar(20) CONSTRAINT VALID_EMAIL CHECK(email like '%@%.___'));
+
+1.6
+
+alter table emp
+add constraint unq_phone
+unique(phone);
+
+1.7
+
+alter table emp
+add constraint UNique_email
+unique(email);
+
+1.8
+
+alter table medical_policy
+drop primary key;
+
+alter table medical_policy
+add constraint PK_MP
+primary key(empno,policyno,policydate);
+
+1.9
+
+alter table medical_policy
+drop constraint C_p;
+
+alter table medical_policy
+add constraint C_P
+check(premium > 1000);
+
+--------------------------------------------------
+drop table emp_skill;
+drop table work_exp;
+drop table family_dependents;
+drop table medical_policy;
+drop table pay_check;
+drop table skill;
+drop table client;
+drop table prj_details;
+drop table emp;
+___________________________________________________________________________________________________________________
+
+2.0
+
+
+insert into EMP values(100,'RAJESH','BTECH',1234567890,'rajesh@digisol.com','DEVELOPER',100000,null);
+insert into EMP values(101,'RAVI','MTECH',1234567891,'ravi@digisol.com','PROJECT LEADER',110000,NULL);
+insert into EMP values(102,'VIJAY','BTECH',1234567892,'vijay@digisol.com','PROJECT MANAGER',120000,null);
+insert into EMP values(108,'AJAY','BTECH',1234567893,'ajay@digisol.com','TECHNICAL HEAD',130000,null);
+insert into EMP values(110,'BHASKAR','MTECH',1234567894,'bhaskar@digisol.com','PROJECT DIRECTOR',140000,null);
+insert into EMP values(106,'RAJ','MSC',1234567895,'raj@digisol.com','PROJECT LEADER',150000,null);
+insert into EMP values(105,'MANISH','MCA',1234567896,'manish@digisol.com','DEVELOPER',160000,null);
+
+insert into EMP values(106,'PRASAD','PHD',1234567897,'prasad@digisol.com','CEO',200000,null);
+ORA-00001: unique constraint (DSE108.PK_EMPNO) violated
+insert into EMP values(103,'PRASAD','PHD',1234567897,'prasad@digisol.com','CEO',200000,null);
+
+
+insert into EMP values(102,'RAKESH','MTECH',12345667898,'rakesh@digisol.com','DEVELOPER',160000,null);
+ORA-01438: value larger than specified precision allowed for this column
+insert into EMP values(104,'RAKESH','MTECH',1234566789,'rakesh@digisol.com','DEVELOPER',160000,null);
+
+
+insert into EMP values(108,'RAKESH','MTECH',1234567898,'rakesh@digisol.com','DEVELOPER',160000,null);
+ORA-00001: unique constraint (DSE108.PK_EMPNO) violated
+insert into EMP values(107,'RAKSH','MTECH',1234567898,'raksh@digisol.com','DEVELOPER',170000,null);
+
+
+insert into EMP values(109,'VENKAT','MBA',1234567899,'venkat@digisol.com','PROJECT LEADER',110000,null);
+ORA-02290: check constraint (DSE108.VALID_QUALIF) violated
+insert into EMP values(109,'VENKAT','MCA',1234567899,'venkat@digisol.com','PROJECT LEADER',110000,null);
+
+insert into EMP values(110,'BALAJI','MBA',1234569871,'balaji@digisol.com','PROJECT DIRECTOR',140000,null);
+ORA-00001: unique constraint (DSE108.PK_EMPNO) violated
+insert into EMP values(113,'BALAJI','MCA',1234569871,'balaji@digisol.com','PROJECT DIRECTOR',140000,null);
+
+
+insert into EMP values(111,'NIKHITH','BTECH',1236547895,'nikhith@digisol.com','TECHNICAL HEAD',130000,null);
+insert into EMP values(112,'PAVAN','MTECH',1236549876,'pavan@digisol.com','PROJECT MANAGER',150000,null);
+
+
+update emp set reports_to = 101 where empcode = 100;
+update emp set reports_to = 102 where empcode = 101;
+update emp set reports_to = 110 where empcode = 102;
+update emp set reports_to = 102 where empcode = 108;
+update emp set reports_to = 106 where empcode = 110;
+update emp set reports_to = 110 where empcode = 106;
+update emp set reports_to = 106 where empcode = 105;
+update emp set reports_to = 109 where empcode = 104;
+update emp set reports_to = 104 where empcode = 107;
+update emp set reports_to = 103 where empcode = 109;
+update emp set reports_to = 112 where empcode = 113;
+update emp set reports_to = 105 where empcode = 111;
+update emp set reports_to = 111 where empcode = 112;
+
+
+
+2.1
+
+insert into skill values('S1','Full Stack');
+insert into skill values('S2','Python');
+insert into skill values('S3','Java');
+insert into skill values('S4','C++');
+insert into skill values('S6','Oracle');
+insert into skill values('S7','Android');
+insert into skill values('S8','AZURE');
+insert into skill values('S9','DOT NET');
+insert into skill values('S10','IOS');
+insert into skill values('S11','ML');
+
+2.2
+
+insert into client values('C1','ABC','+48-87489389','aaa@abc.com');
+insert into client values('C2','LTS','+91-78389397','bbb@lts.com');
+insert into client values('C3','RK','+44-67838934','ccc@rk.com');
+insert into client values('C4','MMA','+31-77839093','ddd@mma.com');
+insert into client values('C5','AKS','+81-66822903','eee@aks.com');
+
+insert into client values('C6','GKS','+78-75628982','fff@gks.com');
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.PHONE_FORMAT) violated ORA-06512: at "SYS.DBMS_SQL", line 1721
+insert into client values('C6','GKS','+91-75628982','fff@gks.com');
+
+insert into client values('C7','B&B','+91-64839839','ggg@bb.com');
+
+insert into client values('C8','ABT','+97-67554667',null);
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.PHONE_FORMAT) violated ORA-06512: at "SYS.DBMS_SQL", line 1721
+insert into client values('C8','ABT','+44-67554667',null);
+
+insert into client values('C9','XYZ',null,'xyz.ab.com');
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.PHONE_FORMAT) violated ORA-06512: at "SYS.DBMS_SQL", line 1721
+insert into client values('C9','XYZ','+48-25694598','xyz@ab.com');
+
+insert into client values('C10','GHS','+91-25369874','abc@hkd.com');
+
+
+2.3
+
+insert into emp_skill values(100,'S1',15);
+insert into emp_skill values(100,'S3',10);
+insert into emp_skill values(101,'S1',6);
+insert into emp_skill values(101,'S2',10);
+insert into emp_skill values(102,'S4',18);
+insert into emp_skill values(110,'S1',14);
+insert into emp_skill values(110,'S6',20);
+insert into emp_skill values(106,'S2',10);
+insert into emp_skill values(106,'S6',12);
+insert into emp_skill values(106,'S8',10);
+insert into emp_skill values(108,'S9',5);
+insert into emp_skill values(108,'S6',18);
+insert into emp_skill values(105,'S7',12);
+insert into emp_skill values(105,'S10',11);
+
+insert into emp_skill values(101,'S2',7);
+insert into emp_skill values(101,'S2',7)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (DSE108.PK_EMPNO_SKILLID) violated
+
+insert into emp_skill values(101,'S3',7);
+
+insert into emp_skill values(102,'S11',12);
+
+
+2.4
+
+insert into work_exp values(100,'P1',20,'C1','A');
+insert into work_exp values(100,'P3',15,'C3','A');
+insert into work_exp values(101,'P1',16,'C1','A');
+insert into work_exp values(102,'P2',18,'C2','B');
+insert into work_exp values(102,'P1',18,'C1','A');
+insert into work_exp values(108,'P2',12,'C2','C');
+insert into work_exp values(106,'P3',20,'C3','C');
+insert into work_exp values(106,'P4',10,'C4','C');
+insert into work_exp values(105,'P2',19,'C2','B');
+insert into work_exp values(110,'P4',12,'C4','B');
+insert into work_exp values(110,'P5',16,'C8','A');
+
+insert into work_exp values(105,'P5',5,'C5','D');
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.SYS_C0082728307) violated 
+ORA-06512: at "SYS.DBMS_SQL", line 1721
+insert into work_exp values(105,'P5',5,'C5','C');
+
+
+
+insert into work_exp values(111,'P5',5,'C5','C');
+insert into work_exp values(108,'P5',6,'C4','C');
+
+
+2.5
+
+insert into prj_details values('P1','SPYDER','10/Jan/2020','11/Oct/2022','12/Oct/2022',102,2000000,1990000);
+insert into prj_details values('P2','APOLLO','01-Jan-2019','10-Jul-2021','11-Jul-2021',108,3000000,3600000);
+insert into prj_details values('P3','UNICORN','03/Nov/2021','10/Oct/2023','10/Oct/2023',106,7500000,8000000);
+insert into prj_details values('P4','ZEUS','28/Feb/2020','09/Jun/2021','10/Jan/2022',110,5500000,5000000);
+insert into prj_details values('P5','JUPITER','07/Aug/2018','04/Feb/2020','01/Nov/2020',110,9000000,9000000);
+
+insert into prj_details values('P6','MARS','21/Feb/2022','07/Aug/2020','09/Dec/2020',135,8000000,9000000);
+insert into prj_details values('P6','MARS','21/Feb/2022','07/Aug/2020','09/Dec/2020',135,8000000,9000000)
+*
+ERROR at line 1:
+ORA-02290: check constraint (DSE108.END_DATE_GREATER_START_DATE) violated 
+insert into prj_details values('P6','MARS','21/Feb/2019','07/Aug/2020','09/Dec/2020',113,8000000,9000000);
+
+
+insert into prj_details values(Null,'XXX','21/Feb/2019','08/Aug/2020','10/Dec/2020',138,8000000,9000000);
+insert into prj_details values(Null,'XXX','21/Feb/2019','08/Aug/2020','10/Dec/2020',138,8000000,9000000)
+                               *
+ERROR at line 1:
+ORA-01400: cannot insert NULL into ("DSE108"."PRJ_DETAILS"."PRJID")
+insert into prj_details values('P8','PLUTO','21/Mar/2019','10/Sep/2020','15/Jan/2021',114,8000000,9000000);
+
+insert into prj_details values('P7','SATURN','21/Feb/2020','08/Aug/2021','10/Dec/2021',123,8500000,9400000);
+insert into prj_details values('P7','SATURN','21/Feb/2020','08/Aug/2021','10/Dec/2021',123,8500000,9400000)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DSE108.FK_LEAD_EMP) violated - parent key not 
+found 
+insert into prj_details values('P7','SATURN','21/Feb/2020','08/Aug/2021','10/Dec/2021',108,8500000,9400000);
+
+insert into prj_details values('P9','SUN','25/APR/2020','14/NOV/2020','23/FEB/2021',111,9600000,9800000);
+
+2.6
+
+
+insert into medical_policy values(100,'MED01',10000,'10/Dec/2020');
+insert into medical_policy values(101,'MED03',12000,'15/Dec/2020');
+insert into medical_policy values(100,'MED01',10000,'10/Jan/2021');
+insert into medical_policy values(101,'MED03',12000,'15/Oct/2021');
+insert into medical_policy values(103,'MED04',9000,'21/Jan/2021');
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DSE108.SYS_C0021417) violated - parent key not 
+found 
+
+insert into medical_policy values(102,'MED05',15000,'22/Jan/2021');
+
+
+2.7
+
+insert into family_dependents values(100,'AJITH','SON',12);
+insert into family_dependents values(100,'PRATHVI','DAUGHTER',9);
+insert into family_dependents values(101,'AARYA','DAUGHTER',17);
+insert into family_dependents values(101,'AKANKSH','SON',11);
+insert into family_dependents values(101,'ANITHA','SPOUSE',43);
+insert into family_dependents values(102,'ANIKET','BROTHER',25);
+
+2.8
+
+insert into pay_check values(100,'01/Dec/2020',2000,123,456,789,2500,5000);
+insert into pay_check values(101,'01/MAR/2020',3000,2400,5000,2300,5000,7000);
+insert into pay_check values(102,'01/Dec/2020',3000,2500,5400,2400,3600,7000);
+insert into pay_check values(100,'01/Jan/2021',3000,3000,4500,5000,450,4000);
+insert into pay_check values(101,'01/MAR/2021',5000,3500,4000,5500,2100,4000);
+insert into pay_check values(102,'01/Jan/2021',5000,3600,4600,5800,NULL,9000);
+
+insert into pay_check values(103,'02/Jan/2021',7000,2500,1400,3600,900,3000);
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DSE108.SYS_C0020885) violated - parent key not 
+found 
+
+insert into pay_check values(108,'02/Jan/2021',7000,2500,1400,3600,900,3000);
+
+
+-----------------------------------------------------------------------------
+
+
+2.9
+
+COMMIT;
+delete from emp where empcode = 100;
+
+ORA-02292: integrity constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.SYS_C0082728309) 
+	violated - child record found ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+# Foreign keys
+
+2.10
+
+update emp 
+set email = 'ajesh@digital.com' 
+where empcode = 111;
+
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.EMAIL_DOMAIN) violated 
+ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+# @digisol.com
+
+2.11
+
+update work_emp 
+set prjid = 'P9'
+where empcode = 111;
+
+ORA-02291: integrity constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.SYS_C0082728310) violated - 
+	parent key not found ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+2.12
+
+select * from client;
+
+COMMIT;
+delete from client
+where clientid = 'C1';
+
+# Deletion successful
+
+2.13
+
+select * from family_dependents;
+COMMIT;
+delete from family_dependents
+where empno = 100;
+
+# Deletion successful - 2 rows
+
+ROLLBACK;
+
+2.14
+
+UPDATE EMP
+SET SALARY = SALARY *1.1
+WHERE DESIGNATION = 'DEVELOPER';
+
+# UPDATE SUCCESSFUL
+
+2.15
+
+UPDATE EMP
+SET EMPCODE = 106
+WHERE REPORTS_TO = 108;
+
+# UPDATE SUCCESSFUL
+
+2.16
+
+UPDATE EMP
+SET EMPCODE = 117
+WHERE REPORTS_TO = 108;
+
+ORA-02291: integrity constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.FK_REPORTS_TO_EMPCODE) 
+violated - parent key not found ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+# NO ROW IS UPDATED
+
+________________________________________________________________________________________
+3.1
+
+select * from client;
+
+3.2
+
+select name,phone,email from emp where designation = 'DEVELOPER';
+
+3.3
+
+select name from emp where reports_to = 106;
+
+3.4
+
+select name,email from emp where designation = 'TECHNICAL HEAD' and qualification ='BTECH';
+
+3.5
+
+select name from emp where salary >= 100000 and salary <= 200000;
+
+select name from emp where salary between 100000 and 200000;
+
+3.6
+
+SELECT SKILLID FROM EMP_SKILL WHERE EMPNO=101;
+
+3.7
+
+select skillname from skill where skillID in (select skillID from emp_skill where empno = 101);
+
+3.8
+
+select empcode from work_exp where clientID in ('C1','C2') and rating in ('A','B');
+
+3.9
+
+select name from emp where empcode in (select empcode from 
+work_exp where clientID = 'C2' and rating ='B');
+
+3.10
+
+select count(empno) from family_dependents where empno = 
+( select empcode from emp  where name = 'RAVI');
+
+3.11
+
+select name,designation,salary*12 as Annual_Salary from emp;
+
+3.12
+
+select e.name,f.dep_name from emp e left JOIN family_dependents f on e.empcode = f.empno;
+
+3.13
+
+select name, prj_name from emp,prj_details where empcode=lead_by_empcode 
+and end_date=actual_end_date and budget_allocated=actual_budget;
+
+3.14
+
+select e.name,e.salary,p.* from emp e, pay_check p where e.empcode = p.empcode and 
+pay_date like '%MAR%';
+
+3.15
+
+select e.name,h.name as Higher_Authority_Name,e.phone from emp e, emp h 
+where e.reports_to = h.empcode;
+
+3.16
+
+select * from prj_details order by ACTUAL_END_DATE desc;
+
+3.17
+
+select e.name,s.skillname from emp e, skill s, emp_skill p where e.empcode = p.empno 
+and p.skillID = s.skillID order by p.empno asc, p.skill_experience desc;
+
+3.18
+
+select e.name,f.dep_name,age from emp e, family_dependents f where e.empcode = f.empno 
+and f.relationship = 'SON' order by e.name asc, age desc;
+
+3.19
+
+select e.name, p.prj_name from emp e, prj_details p where e.empcode = p.lead_by_empcode 
+order by e.name asc, p.prj_name desc;
+
+3.20
+
+select name,prj_name from emp,prj_details where empcode = lead_by_empcode and 
+prj_name = 'SPYDER'
+UNION
+select name,prj_name from emp,prj_details where empcode = lead_by_empcode and 
+prj_name = 'APOLLO';
+
+3.21
+
+select e.name from emp e,skill s,emp_skill p where e.empcode=p.empno and 
+s.skillID=p.skillID and s.skillname='Oracle'
+INTERSECT
+select e.name from emp e,skill s,emp_skill p where e.empcode=p.empno and 
+p.skillID=s.skillID and s.skillname='AZURE';
+
+
+3.22
+
+select e.name from emp e, prj_details p where e.empcode = p.lead_by_empcode
+MINUS
+select e.name from emp e, prj_details p where e.empcode = p.lead_by_empcode and 
+p.prj_name = 'JUPITER';
+
+3.23
+
+select name from emp where reports_to is null;
+
+3.24
+
+select name,email from emp where name like ('RA%');
+
+3.25
+
+select prj_name from prj_details where start_date between '01/Jan/2020' and '31/Dec/2020';
+
+3.26
+
+select distinct e.name from emp e,skill s,emp_skill p where e.empcode=p.empno and 
+p.skillID=s.skillID and s.skillname= some(select s.skillname from emp e,skill s,
+emp_skill p where e.empcode=p.empno and p.skillID=s.skillID and e.empcode = 101);
+
+____________________________________________________________________________________________________________________
+
+4.1
+
+select name from emp where designation = (select designation from emp where empcode = 101);
+
+4.2
+
+select name from emp where reports_to in (select empcode from emp where name = 'VIJAY');
+
+4.3
+
+select name,designation,email from emp e where empcode in ( 
+select empcode from work_exp where prjid in (select w.prjid from work_exp w, emp e 
+where w.empcode=e.empcode and e.name = 'VIJAY'));
+
+Only record of vijay can be found as there is a unique constraint on the column 'prj_name'.
+
+4.4
+
+select name from emp,family_dependents where empcode=empno and relationship = 'DAUGHTER';
+
+4.5
+
+select distinct name from emp where name not in (select distinct e.name from emp e,
+prj_details p where e.empcode = p.LEAD_BY_EMPCODE and p.prj_name = 'SPYDER');
+
+4.6
+
+select distinct e.name from emp e,emp_skill es where  e.empcode=es.empno and
+es.skillID = some(select es.skillID from emp_skill es join work_exp w on es.empno=w.empcode 
+where prjid='P1');
+
+4.7
+
+select e.name from emp e natural join work_exp w where w.prjid='P1' and 
+work_experience > all(select work_experience from work_exp where prjid='P2');
+
+4.8 
+
+select e.name from emp e natural join work_exp w where exists(select prjid,clientid from 
+work_exp we where we.prjid=w.prjid and we.clientid=w.clientid and we.empcode=100);
+
+4.9  
+
+select name from emp e where not exists( 
+select * from work_exp w where e.empcode=w.empcode and w.prjid in (SELECT PRJID FROM 
+WORK_EXP WHERE EMPCODE=106));
+
+4.10 
+
+SELECT P.PRJ_NAME FROM PRJ_DETAILS P WHERE P.BUDGET_ALLOCATED >SOME(SELECT SUM(E.SALARY) 
+FROM EMP E,WORK_EXP W,prj_details pj WHERE E.EMPCODE=W.EMPCODE AND W.PRJID=Pj.PRJID);
+
+4.11 
+
+SELECT P.PRJ_NAME, COUNT(X.EMPCODE) FROM PRJ_DETAILS P, WORK_EXP X
+WHERE P.PRJID = X.PRJID AND X.RATING IN ('A', 'B') GROUP BY P.PRJ_NAME 
+ORDER BY COUNT(X.EMPCODE) DESC;
+
+4.12
+
+select p.prj_name from (prj_details p left join work_exp w on w.prjid=p.prjid)  
+group by prj_name having count(w.empcode) > 2;
+
+SELECT P.PRJ_NAME FROM PRJ_DETAILS P, (SELECT w.PRJID, COUNT(w.EMPCODE) CNT FROM
+WORK_EXP w GROUP BY w.PRJID) Q WHERE P.PRJID = Q.PRJID AND Q.CNT > 2;
+
+4.13
+
+select e.name,count(f.empno) num_dep from (emp e join family_dependents f on 
+e.empcode=f.empno) group by e.name;
+
+SELECT NAME, COUNT(DEP_NAME) NUM_DEPS FROM EMP E JOIN FAMILY_DEPENDENTS F ON 
+E.EMPCODE = F.EMPNO GROUP BY NAME;
+
+4.14
+
+select extract(year from policydate),sum(premium) as Total_premium from medical_policy 
+group by extract(year from policydate);
+
+
+4.15
+
+
+WITH TOT_EXP AS (SELECT EMPNO, SUM(SKILL_EXPERIENCE) SUM_EXP FROM EMP_SKILL GROUP BY EMPNO)
+SELECT E.NAME FROM EMP E, TOT_EXP TE WHERE E.EMPCODE = TE.EMPNO AND TE.SUM_EXP > 20;
+
+4.16
+
+CREATE TABLE EMP_PRJ(EMP_NAME, BUDGET, PROJECT_NAME) AS SELECT
+E.NAME, PD.PRJ_NAME, PD.BUDGET_ALLOCATED FROM EMP E, PRJ_DETAILS PD, WORK_EXP WE WHERE
+E.EMPCODE = WE.EMPCODE AND
+WE.PRJID = PD.PRJID AND
+PD.LEAD_BY_EMPCODE = 110;
+
+select * from emp_prj;
+
+4.17
+
+UPDATE EMP SET SALARY = CASE
+WHEN DESIGNATION = ('PROJECT LEADER') THEN SALARY*1.1
+WHEN DESIGNATION = 'DEVELOPER' THEN SALARY*1.05
+ELSE SALARY*10
+END;
+
+4.18
+
+CREATE VIEW EMP_SKILL_EXPERIENCE(EMPLOYEE_NAME, SKILL_NAME, SKILL_EXPERIENCE) AS
+SELECT E.NAME, SE.SKILL_EXPERIENCE,S.SKILLNAME FROM EMP E,EMP_SKILL SE, SKILL S WHERE
+E.EMPCODE = SE.EMPNO AND SE.SKILLID = S.SKILLID AND SKILL_EXPERIENCE>20;
+
+
+4.19
+
+CREATE VIEW EMP_DESIGNATION AS SELECT EMPCODE,  NAME, SALARY FROM EMP WHERE DESIGNATION = 'DEVELOPER' OR DESIGNATION = 'PROJECT LEADER' ;
+UPDATE EMP_DESIGNATION SET SALARY = 300000 WHERE EMPCODE = 115;
+COMMIT;
+
+4.20
+
+select e.name, (select count(distinct(prjid)) from work_exp w where w.empcode = e.empcode) no_of_projects from emp e;
+
+___________________________________________________________________________________________
+
+
+
+5.1
+
+SELECT Name, UPPER(NAME) UNAME, LOWER(NAME) LNAME, INITCAP(NAME) FNAME FROM EMP;
+
+5.2
+
+SELECT (NAME||' WORKS AS A '||DESIGNATION) FROM EMP;
+
+5.3
+
+SELECT LPAD(SALARY ,10, '*') SALARY FROM EMP;
+
+5.4 
+
+SELECT RPAD(SALARY,10,'*') SALARY FROM EMP;
+
+5.5
+
+SELECT NAME, LENGTH(NAME) LENGTH FROM EMP;
+
+5.6
+
+SELECT EMAIL, SUBSTR(EMAIL,3,9) Substr_Email FROM EMP;
+
+5.7
+
+SELECT EMAIL, REPLACE(EMAIL,'digisol','digitech') REPLACED_EMAIL FROM EMP;
+
+5.8
+
+SELECT NAME, DEP_NAME, CONCAT(NAME,DEP_NAME) CONCATENATED_NAME
+FROM EMP E JOIN FAMILY_DEPENDENTS F ON E.EMPCODE = F.EMPNO;
+
+5.9
+
+SELECT CLIENTID, LENGTH(CLIENTID) FROM CLIENT;
+
+5.10
+
+SELECT RTRIM(CLIENTID) TRIMMED, LENGTH(RTRIM(CLIENTID)) NUM_CHARS FROM CLIENT;
+
+5.11
+
+SELECT LTRIM(CLIENTID) TRIMMED, LENGTH(LTRIM(CLIENTID)) NUM_CHARS FROM CLIENT;
+
+SELECT TRIM(CLIENTID) TRIMMED, LENGTH(TRIM(CLIENTID)) NUM_CHARS FROM CLIENT;
+
+5.12
+
+SELECT ASCII('A') ASCII_of_A, CHR(65) char_OF_65 FROM DUAL;
+
+5.13
+
+SELECT TRUNC(123.456,2) FROM DUAL;
+
+5.14
+
+SELECT POWER(9,0.5) ROOT, POWER(9,2) SQUARE, POWER(9,5) POWER_5 FROM DUAL;
+
+5.15
+
+SELECT ROUND(123.456,2) FROM DUAL;
+
+5.16
+
+SELECT ABS(-123) ABS, MOD(123,10) REM FROM DUAL;
+
+5.17
+
+SELECT FLOOR(234.36),FLOOR(-234.36), CEIL(-234.26),CEIL(234.26) FROM DUAL;
+
+5.18
+
+SELECT PRJID, TO_CHAR(START_DATE, 'DD-Month-YYYY') START_DATE, 
+TO_CHAR(END_DATE, 'DD-Month-YYYY') END_DATE FROM PRJ_DETAILS;
+
+5.19
+
+SELECT PRJID, TO_CHAR(ACTUAL_END_DATE,'Month') CLOSING_MONTH, 
+TO_CHAR(ACTUAL_END_DATE, 'YYYY') CLOSING_YEAR FROM PRJ_DETAILS;
+
+5.20
+
+SELECT TO_CHAR(START_DATE,'DD') DAY, TO_CHAR(START_DATE,'MON') MONTH, 
+TO_CHAR(START_DATE,'YYYY') YEAR FROM PRJ_DETAILS;
+
+5.21
+
+SELECT PRJ_NAME, round(MONTHS_BETWEEN(END_DATE,START_DATE)) NUM_MONTHS FROM PRJ_DETAILS;
+
+5.22
+
+SELECT PRJ_NAME, END_DATE, ADD_MONTHS(END_DATE,2) TWO_MONTHS_LATER FROM PRJ_DETAILS;
+
+5.23
+
+SELECT NEXT_DAY(TO_CHAR(LOCALTIMESTAMP,'DD-MON-YYYY'),'THURSDAY') NEXT_THURSDAY
+FROM DUAL;
+
+____________________________________________________________________________________________________________
+
+SET SERVEROUTPUT ON
+DECLARE
+
+BEGIN
+
+END;
+/
+
+6.1
+
+SET SERVEROUTPUT ON
+DECLARE
+
+num1 number(5);
+num2 number(5);
+rev number(5) := 0;
+
+BEGIN
+
+num1:=&num1;
+while num1>0
+loop
+num2:=num1 mod 10;
+rev:=num2+(rev*10);
+num1:=floor(num1/10);
+end loop;
+
+dbms_output.put_line('Reversed number is: '||rev);
+
+END;
+/
+
+6.2
+
+DECLARE
+
+s VARCHAR2(10);
+l VARCHAR2(20);
+t VARCHAR2(10);
+
+BEGIN
+
+s:=&s;
+FOR i IN REVERSE 1..Length(s) LOOP  
+l := Substr(s, i, 1);  
+t := t||''||l;  
+END LOOP;
+IF t = s THEN 
+dbms_output.Put_line(t||''||' is palindrome');  
+ELSE 
+dbms_output.Put_line(t||''||' is not a palindrome');  
+END IF;  
+
+END; 
+/
+
+6.3
+
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_sentence varchar2(100);
+--v_sentence varchar(100);
+v_vowels number:=0;
+v_consonents number:=0;
+v_numbers number:=0;
+v_special_char number:=0;
+C char;
+
+BEGIN
+
+v_sentence := '&v_sentence';
+
+FOR i IN 1..LENGTH(v_sentence) LOOP
+	
+	C:= SUBSTR(v_sentence, i, 1);
+
+	IF C IN ('A', 'E', 'I', 'O', 'U' ) OR C IN ( 'a', 'e', 'i', 'o', 'u' ) THEN v_vowels := v_vowels + 1;
+
+	ELSIF C IN ('!','#','$','%','&','(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\',']','^','_','`','{','|','}','~') THEN  v_special_char := v_special_char + 1;
+	
+	ELSIF C IN ('0','1','2','3','4','5','6','7','8','9') THEN v_numbers := v_numbers + 1;
+
+	ELSIF C NOT IN (' ') THEN v_consonents := v_consonents + 1;
+	
+	END IF;
+END LOOP;
+
+dbms_output.Put_line('No. of Vowels: ' || v_vowels);
+dbms_output.Put_line('No. of Consonants: ' || v_consonents);
+dbms_output.Put_line('No. of Numbers: ' || v_numbers); 
+dbms_output.Put_line('No. of Special Characters: ' || v_special_char); 
+
+END;
+/
+
+6.4
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_emp_code number(3);
+
+v_emp emp%rowtype;
+
+BEGIN
+
+v_emp_code := &v_emp_code;
+
+SELECT * INTO v_emp FROM emp where empcode = v_emp_code;
+
+dbms_output.Put_line('Employee Code of Employee is: ' || v_emp.empcode);
+dbms_output.Put_line('Name of Employee is:          ' || v_emp.name);
+dbms_output.Put_line('Qualification of Employee is: ' || v_emp.qualification);
+dbms_output.Put_line('Phone of Employee is:         ' || v_emp.phone);
+dbms_output.Put_line('Email of Employee is:         ' || v_emp.email);
+dbms_output.Put_line('Designation of Employee is:   ' || v_emp.designation);
+dbms_output.Put_line('Salary of Employee is:        ' || v_emp.salary);
+dbms_output.Put_line('Given Employee Reports To Employee with Employee Code: ' || v_emp.reports_to);
+
+END;
+/
+
+6.5
+
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_empcode number(3);
+v_prj_id char(2);
+v_rating char;
+v_incentive number;
+
+v_work work_exp%rowtype;
+v_emp emp%rowtype;
+v_prj prj_details%rowtype;
+--v_paycheck pay_check%rowtype;
+
+BEGIN
+
+v_empcode := &v_empcode;
+v_prj_id := '&v_prj_id';
+
+SELECT * INTO v_work FROM work_exp WHERE empcode = v_empcode AND prjid = v_prj_id;
+SELECT * INTO v_emp FROM emp WHERE empcode = v_empcode;
+SELECT * INTO v_prj FROM prj_details WHERE prjid = v_prj_id;
+--SELECT * INTO v_paycheck FROM pay_check WHERE empcode = v_empcode;
+
+SELECT v_work.rating INTO v_rating FROM work_exp WHERE empcode = v_empcode AND prjid = v_prj_id;
+--v_rating := v_work.rating;
+
+IF v_rating = 'A' THEN v_incentive := 10000;
+
+ELSIF v_rating = 'B' THEN v_incentive := 5000;
+
+ELSIF v_rating = 'c' THEN v_incentive := 3000;
+
+ELSE v_incentive :=0;
+
+END IF;
+
+dbms_output.Put_line('Employee Number: ' || v_work.empcode);
+dbms_output.Put_line('Employee Name:   ' || v_emp.name);
+dbms_output.Put_line('Salary:          ' || v_emp.salary);
+dbms_output.Put_line('Project Name:    ' || v_prj.prj_name);
+dbms_output.Put_line('Rating:          ' || v_work.rating);
+dbms_output.Put_line('Incentive:       ' || v_incentive);
+dbms_output.Put_line('Total Salary:    ' || to_char(v_emp.salary+v_incentive));
+
+dbms_output.Put_line('Other Iincentives Updated: ' ||  v_incentive);
+
+UPDATE pay_check SET other_incentives =  other_incentives + v_incentive WHERE empcode = v_empcode;
+
+END;
+/
+
+6.6
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_emp_code number(3) := 100;
+--v_pay_date date := '01-JAN-2021';
+
+v_emp emp%rowtype;
+v_pay pay_check%rowtype;
+
+BEGIN
+
+SELECT * INTO v_emp FROM emp WHERE empcode = v_emp_code;
+SELECT * INTO v_pay FROM pay_check WHERE empcode = v_emp_code AND pay_date = to_date('01-01-2021', 'DD-MM-YYYY');
+
+dbms_output.Put_line('Name:              ' || v_emp.name);
+dbms_output.Put_line('Basic_Salary:      ' || v_emp.salary);
+dbms_output.Put_line('Regular Increment: ' || v_pay.Regular_Increment);
+dbms_output.Put_line('Increased Basic Salary: ' || to_char(v_emp.Salary+v_pay.Regular_Increment));
+dbms_output.Put_line('Performance incentive:  ' || v_pay.performance_incentive);
+dbms_output.Put_line('DA is:                  '|| v_pay.da*0.5);
+--dbms_output.Put_line('DA is:                '|| to_char(v_pay.da*0.5));
+dbms_output.Put_line('PF is:                  ' || v_pay.pf*0.12);
+--dbms_output.Put_line('PF is:                ' || to_char(v_pay.pf*0.12));
+dbms_output.Put_line('Other Incentive:        ' || v_pay.other_incentives);
+dbms_output.Put_line('Advance tax paid:       ' || v_pay.advanc_tax);
+dbms_output.Put_line('Monthly Gross Salary:   ' || to_char(v_emp.Salary+v_pay.Regular_Increment+v_pay.Performance_incentive+v_pay.DA+v_pay.PF+v_pay.other_incentives));
+dbms_output.Put_line('Monthly Take home salary: ' ||  to_char(v_emp.Salary+v_pay.Regular_Increment+v_pay.Performance_incentive+v_pay.DA+v_pay.PF+v_pay.other_incentives-v_pay.PF-v_pay.advanc_tax));
+
+END;
+/
+
+6.7
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_emp IS SELECT empcode, name, salary, regular_increment, performance_incentive, other_incentives, advanc_tax FROM emp NATURAL JOIN pay_check 
+WHERE pay_date = to_date('01-01-2021', 'DD-MM-YYYY');
+
+c_da pay_check.da%type;
+c_pf pay_check.pf%type;
+c_incsal emp.salary%type;
+c_mgross emp.salary%type;
+c_home emp.salary%type;
+
+BEGIN
+
+FOR i IN c_emp LOOP
+
+	c_incsal := i.salary + i.regular_increment;
+	c_da := c_incsal*0.5;
+	c_pf := c_incsal*0.12;
+	c_mgross := i.salary + i.regular_increment + i.performance_incentive + c_da + c_pf + i.other_incentives;
+	c_home := c_mgross - c_pf - i.advanc_tax;
+	dbms_output.put_line('Name:           '|| i.name);
+	dbms_output.put_line('Basic_Salary:   '|| i.salary);
+	dbms_output.put_line('Increased Basic Salary:   '|| c_incsal);
+	dbms_output.put_line('Performance Incentive:    '|| i.performance_incentive);
+	dbms_output.put_line('DA:  '|| c_da);
+	dbms_output.put_line('PF:  '|| c_pf);
+	dbms_output.put_line('Other Incentive:          '|| i.other_incentives);
+	dbms_output.put_line('Advance Tax Paid:         '|| i.advanc_tax);
+	dbms_output.put_line('Monthly Gross Salary:     '|| c_mgross);
+	dbms_output.put_line('Monthly Take Home Salary: '|| c_home);
+
+END LOOP;
+
+END;
+/
+
+6.8
+
+
+6.9
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_prj IS SELECT empcode, prj_name, lead_by_empcode FROM emp NATURAL JOIN work_exp NATURAL JOIN prj_details WHERE actual_budget > budget_allocated;
+
+prj_lead emp.name%type;
+
+BEGIN
+
+FOR i IN c_prj LOOP
+
+	SELECT name INTO prj_lead FROM emp WHERE empcode = i.lead_by_empcode;
+	dbms_output.put_line('Name of the Project Leader: ' || prj_lead);
+	dbms_output.put_line('Name of the Project:        ' || i.prj_name);
+
+END LOOP;
+
+END;
+/
+
+6.10
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_emp IS SELECT name, designation from emp;
+
+BEGIN
+
+FOR i IN c_emp LOOP
+
+	dbms_output.put_line('Name:            ' || i.name);
+	dbms_output.put_line('Designation:     ' || i.designation);
+	dbms_output.put_line('Email Generated: ' || i.name || '.' || i.designation || '@digisoul.com');
+
+END LOOP;
+
+END;
+/
+
+6.11
+
+
+
+6.12
+
+
+
+6.13
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_emp(par_rating CHAR, par_clientID VARCHAR2)
+IS SELECT E.empcode Emp_code, name, designation
+FROM emp E, work_exp W
+WHERE E.empcode = W.empcode AND rating = par_rating AND clientid = par_clientID;
+
+BEGIN
+
+FOR i IN c_emp('&par_clientID', '&par_rating') LOOP
+
+dbms_output.put_line('Employee Code:        ' || i.Emp_code);
+dbms_output.put_line('Employee Name:        ' || i.name);
+dbms_output.put_line('Employee Designation: ' || i.designation);
+
+END LOOP;
+
+END;
+/
+
+6.14
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_emp IS SELECT name, SUM(work_experience) total_work_experience FROM emp NATURAL JOIN work_exp GROUP BY name ORDER BY total_work_experience DESC;
+
+v_emp_name emp.name%type;
+v_work_exp work_exp.work_experience%type;
+i number(1) := 1;
+
+BEGIN
+
+OPEN c_emp;
+
+LOOP
+
+EXIT WHEN i > 5;
+FETCH c_emp INTO v_emp_name, v_work_exp;
+i := i + 1;
+dbms_output.put_line('--------------------');
+dbms_output.put_line('Employee Name: ' || v_emp_name);
+dbms_output.put_line('Total Work Experience: ' || v_work_exp);
+
+END LOOP;
+
+CLOSE c_emp;
+
+END;
+/
+
+
+_________________________________________________________________________________________________________________
+
+7.1
+
+CREATE TABLE ACCOUNT (
+ACCOUNT_NUMBER NUMBER,
+BALANCE NUMBER CONSTRAINT MIN_BALANCE CHECK (Balance > 1000)
+);
+
+INSERT INTO ACCOUNT VALUES(101, 10000);
+INSERT INTO ACCOUNT VALUES(102, 20000);
+INSERT INTO ACCOUNT VALUES(103, 30000);
+INSERT INTO ACCOUNT VALUES(104, 40000);
+INSERT INTO ACCOUNT VALUES(105, 50000);
+
+CREATE OR REPLACE PROCEDURE Withdraw_Money
+(v_accno IN number, v_withdraw IN number) IS
+v_final_bal NUMBER;
+v_bal NUMBER;
+e_Low_Balance EXCEPTION;
+
+BEGIN
+
+SELECT BALANCE INTO v_bal FROM account WHERE account_number = v_accno;
+
+v_final_bal := v_bal - v_withdraw;
+
+dbms_output.put_line('Current Balance: ' || v_bal);
+
+IF v_final_bal > 1000 THEN 
+
+	dbms_output.put_line('Withdrawal of amount ' || v_withdraw || ' is Successful');
+
+	UPDATE ACCOUNT SET BALANCE = v_final_bal WHERE ACCOUNT_NUMBER = v_accno;
+
+	dbms_output.put_line('Updated Current Balance: ' || v_final_bal);
+
+ELSE
+	RAISE e_Low_Balance;
+
+END IF;
+
+EXCEPTION
+WHEN e_Low_Balance THEN
+
+	dbms_output.put_line('Insufficient fund to withdraw, Try with lesser withdrawal amount');
+
+END Withdraw_Money;
+/
+
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_accno number;
+v_withdraw number;
+
+BEGIN
+
+v_accno := &v_accno;
+v_withdraw := &v_withdraw;
+
+Withdraw_Money(v_accno, v_withdraw);
+
+END;
+/
+
+
+
+7.2
+
+
+CREATE OR REPLACE PROCEDURE human_resources_prj(p_skill IN VARCHAR2, p_skill_experience IN NUMBER) IS
+
+CURSOR c_hr IS SELECT empcode, name, skillname, skillexperience
+FROM emp, skill S, emp_skill ES
+WHERE empcode = empno AND S.skillid = ES.skillid AND skillexperience >= p_skill_experience AND skillname = p_skill;
+
+BEGIN
+
+dbms_output.put_line('The Human Resources company has for project MARVEL is: ');
+dbms_output.put_line('*----------*----------*');
+
+FOR i IN c_hr LOOP
+
+    dbms_output.put_line('Details of Emlpoyee: ' || c_hr%ROWCOUNT);
+	dbms_output.put_line(i.empcode);
+    dbms_output.put_line(i.name);
+    dbms_output.put_line(i.skillname);
+    dbms_output.put_line(i.skillexperience);
+    dbms_output.put_line('*----------*----------*');
+
+END LOOP;
+
+END human_resources_prj;
+/
+
+
+--INVOKING PL/SQL BLOCK:
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_skill VARCHAR2(10);
+v_skill_experience NUMBER;
+
+BEGIN
+
+v_skill := '&v_skill';
+v_skill_experience := &v_skill_experience;
+
+human_resources_prj(v_skill, v_skill_experience);
+
+END;
+/
+
+
+7.3
+
+
+CREATE OR REPLACE PROCEDURE Add_Bud_Caln
+(v_project_id IN VARCHAR2, v_add_Bud_needed OUT NUMBER) IS
+v_prj prj_details%ROWTYPE;
+v_dur_prj_days number;
+v_per_day_cost_prj number;
+v_addtl_days number;
+
+BEGIN
+
+SELECT * INTO v_prj FROM prj_details WHERE TRIM(prjid) = v_project_id;
+
+SELECT to_date(end_date, 'dd-mm-yyyy') - to_date(start_date, 'dd-mm-yyyy') INTO v_dur_prj_days FROM prj_details WHERE TRIM(prjid) = v_project_id;
+
+v_per_day_cost_prj := (v_prj.BUDGET_ALLOCATED)/(v_dur_prj_days);
+
+SELECT to_date(actual_end_date, 'dd-mm-yyyy') - to_date(end_date, 'dd-mm-yyyy') INTO v_addtl_days FROM prj_details WHERE TRIM(prjid) = v_project_id;
+
+v_add_Bud_needed := v_addtl_days*v_per_day_cost_prj;
+
+END Add_Bud_Caln;
+/
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_project_id varchar2(3);
+--v_add_Bud_needed number := 0;
+v_add_Bud_needed number;
+v_name emp.name%type;
+v_name_boss emp.name%type;
+v_email_boss emp.email%type;
+
+
+BEGIN
+
+v_project_id := '&v_project_id';
+
+SELECT name INTO v_name FROM emp, prj_details WHERE empcode = lead_by_empcode AND TRIM(prjid) = v_project_id;
+
+SELECT E2.name,E2.email INTO v_name_boss,v_email_boss  FROM emp E1, emp E2, prj_details P WHERE P.lead_by_empcode = E1.empcode AND E1.empcode = E2.reports_to AND TRIM(prjid) = v_project_id;
+
+Add_Bud_Caln(v_project_id, v_add_Bud_needed);
+
+dbms_output.put_line('Name of Project Leader: ' || v_name);
+dbms_output.put_line('Name of Employee to whom Project leader reports to: ' || v_name_boss);
+dbms_output.put_line('Email of Employee to whom Project leader reports to: ' || v_email_boss);
+dbms_output.put_line('Additional Budget Needed: ' || ROUND(v_add_Bud_needed,2));
+
+--dbms_output.put_line('Additional Budget Needed: ' || v_add_Bud_needed);
+
+
+END;
+/
+
+
+
+/*
+
+SELECT name INTO v_name FROM emp, prj_details WHERE empcode = lead_by_empcode AND prjid = v_project_id;
+
+
+THIS STATEMENT NOT WORKING(NOT GIVING ERRORS BUT SAYS NO DATA RETREIVED)
+
+BECAUSE prjid IS DECLARED char(3) IN prj_details TABLE AND v_project_id IS varchar2(2) IN PL/SQL BLOCK 
+
+1 char AT THE END WILL BE FILLED WITH SPACE BY DEFAULT BY ORACLE SOFTWARE
+
+*/
+
+
+7.4
+
+
+--FUNCTION:
+
+CREATE OR REPLACE FUNCTION return_incentive(f_rating IN CHAR) RETURN NUMBER IS
+f_incentive NUMBER;
+
+BEGIN
+
+CASE f_rating
+
+	WHEN 'A' THEN f_incentive := 30000;
+	WHEN 'B' THEN f_incentive := 20000;
+	WHEN 'C' THEN f_incentive := 10000;
+
+END CASE;
+
+RETURN f_incentive;
+
+END return_incentive;
+/
+
+
+--INVOKING PL/SQL BLOCK:
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_temp CHAR;
+v_prj_id varchar2(3);
+
+CURSOR c_emp(v_prjID varchar2) IS SELECT E.name Name, WE.rating Rating FROM work_exp WE, emp E WHERE E.empcode = WE.empcode AND WE.prjid = v_prjID;
+
+BEGIN
+
+v_prj_id := '&v_prj_id';
+
+dbms_output.put_line('Employees working in Project ' || v_prj_id || ' are:');
+dbms_output.put_line('*----------*----------*');
+
+FOR i IN c_emp('&v_prjID') LOOP
+
+    dbms_output.put_line('Name of Employee: ' || i.Name);
+
+    dbms_output.put_line('Rating of Employee: ' || i.Rating);
+
+    v_temp := i.Rating;
+
+    dbms_output.put_line('Incentive of Employee: ' || return_incentive(v_temp));
+
+    dbms_output.put_line('*----------*----------*');
+
+END LOOP;
+
+
+END;
+/
+
+
+7.5
+
+--FUNCTION:
+
+CREATE OR REPLACE FUNCTION clients_phCode(v_ph_code IN VARCHAR2) RETURN NUMBER IS
+v_temp NUMBER := 1;
+
+CURSOR c_client_names IS SELECT name FROM client WHERE phone LIKE concat(v_ph_code, '%');
+
+BEGIN
+
+dbms_output.put_line('The Names of clients with phone code ' || v_ph_code || ' are: ');
+
+FOR i IN c_client_names LOOP
+
+	dbms_output.put_line(i.name);
+
+END LOOP;
+
+RETURN v_temp;
+
+END clients_phCode;
+/
+
+
+--INVOKING PL/SQL BLOCK:
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_phone_code VARCHAR2(3);
+v_temp NUMBER;
+
+BEGIN
+
+v_phone_code := '&v_phone_code';
+
+v_temp := clients_phCode(v_phone_code);
+
+dbms_output.put_line('The process was Successful or Not: ' || v_temp);
+
+
+END;
+/
+
+
+
+7.6
+
+
+CREATE OR REPLACE FUNCTION emp_email_generated RETURN NUMBER IS
+v_temp NUMBER := 1;
+
+CURSOR c_emp_email IS SELECT empcode, name FROM emp;
+
+BEGIN
+
+dbms_output.put_line('The Generated Email id of the Employees are: ');
+dbms_output.put_line(' ');
+
+FOR i IN c_emp_email LOOP
+
+	dbms_output.put_line(i.name || '_' || i.empcode || '@digisol.com');
+
+END LOOP;
+
+RETURN v_temp;
+
+END emp_email_generated;
+/
+
+7.7
+
+
+
+(PACKAGE)
+
+
+CREATE OR REPLACE PACKAGE package_Lab_7_Q7 IS
+
+FUNCTION name_boss(v_empcode IN number) RETURN VARCHAR2;
+
+PROCEDURE employees_prj(v_prjid IN VARCHAR2);
+
+PROCEDURE prj_name_date(v_date_prj IN date);
+
+PROCEDURE employees_skill;
+
+FUNCTION no_of_employees RETURN BOOLEAN;
+
+
+END package_Lab_7_Q7;
+/
+
+
+(PACKAGE BODY)
+
+
+
+CREATE OR REPLACE PACKAGE BODY package_Lab_7_Q7 IS
+
+
+-- (i)
+FUNCTION name_boss(v_empcode IN number) RETURN VARCHAR2 IS 
+
+v_boss VARCHAR2(20);
+
+BEGIN
+
+	SELECT E2.name INTO v_boss FROM emp E1, emp E2 WHERE E1.reports_to = E2.empcode AND E1.empcode = v_empcode;
+
+	RETURN v_boss;
+
+END name_boss;
+
+
+-- (ii)
+PROCEDURE employees_prj(v_prjid IN VARCHAR2) IS
+
+CURSOR c_emp IS SELECT E.name Name FROM prj_details P, work_exp W, emp E WHERE E.empcode = P.lead_by_empcode AND W.prjid = P.prjid AND P.prjid = v_prjid;
+
+BEGIN
+
+	dbms_output.put_line('The Names of Employees in project ' || v_prjid || ' are:');
+	dbms_output.put_line(' ');
+
+	FOR i IN c_emp LOOP
+
+		dbms_output.put_line(i.name);
+
+	END LOOP;
+
+END employees_prj;
+
+
+-- (iii)
+PROCEDURE prj_name_date(v_date_prj IN date) IS
+
+v_prj_name VARCHAR2(10);
+
+BEGIN
+
+	dbms_output.put_line('Name of the Project started from ' || v_date_prj || ' is:');
+	
+	--SELECT prj_name FROM prj_details WHERE start_date = v_date_prj;
+
+	SELECT prj_name INTO v_prj_name FROM prj_details WHERE start_date = v_date_prj;
+
+	dbms_output.put_line(v_prj_name);
+
+
+END prj_name_date;
+
+
+-- (iv)
+PROCEDURE employees_skill IS
+
+CURSOR c_emp_skill IS SELECT empcode, name, skillname, skill_experience FROM emp E, emp_skill ES, skill S WHERE empcode = ES.empno AND ES.skillid = S.skillid;
+
+BEGIN
+
+	dbms_output.put_line('Details of Work Force: ');
+	dbms_output.put_line('*----------*----------*');
+
+	FOR i IN c_emp_skill LOOP
+
+		dbms_output.put_line('Employee Code: ' || i.empcode);
+		dbms_output.put_line('Employee Name: ' || i.name);
+		dbms_output.put_line('Skill Name' || i.skillname);
+		dbms_output.put_line('Skill Experience(In Months)' || i.skillexperience);
+
+		dbms_output.put_line('*----------*----------*');
+
+	END LOOP;	
+
+
+END employees_skill;
+
+
+-- (v)
+FUNCTION no_of_employees RETURN BOOLEAN IS
+
+CURSOR c_desgn_count IS SELECT COUNT(DISTINCT empcode) No_of_emp_designation, designation FROM emp GROUP BY designation;
+
+BEGIN
+
+	dbms_output.put_line('No. of Employees in each Designation: ');
+	dbms_output.put_line('*----------*----------*');
+
+	FOR i IN c_desgn_count LOOP
+
+		dbms_output.put_line('Employee Designation: ' || i.designation);
+
+		dbms_output.put_line('No of Employees: ' || i.No_of_emp_designation);
+
+		dbms_output.put_line('*----------*----------*');
+
+	END LOOP;
+
+	RETURN TRUE;
+
+END no_of_employees;
+
+
+END package_Lab_7_Q7;
+/
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_empno NUMBER;
+v_boss_name VARCHAR2(10);
+
+v_prjID VARCHAR(3);
+
+v_date DATE;
+
+v_temp BOOLEAN;
+
+BEGIN
+
+--(i)
+v_empno := 102;
+v_boss_name := package_Lab_7_Q7.name_boss(v_empno);
+dbms_output.put_line('Boss Name of ' || v_empno || ' is: ' || v_boss_name);
+
+
+--(ii)
+v_prjID := 'P2 ';
+package_Lab_7_Q7.employees_prj(v_prjID);
+
+
+--(iii)
+v_date := '10-JAN-20';
+package_Lab_7_Q7.prj_name_date(v_date);
+
+
+--(iv)
+package_Lab_7_Q7.employees_skill;
+
+
+--(v)
+v_temp := package_Lab_7_Q7.no_of_employees;
+dbms_output.put_line('Function for finding No. of Employees per Designation Executed Successfully ? ' || sys.diutil.bool_to_int(v_temp));
+
+
+END;
+/
+
+__________________________________________________________________________________________________________________
+
+8.1
+
+CREATE OR REPLACE TRIGGER EMP_SALARY_UPDATE BEFORE UPDATE OF SALARY 
+ON EMP 
+FOR EACH ROW
+DECLARE
+	INC NUMBER(9,2);
+BEGIN
+	INC := :NEW.SALARY - :OLD.SALARY;
+	CASE :OLD.DESIGNATION
+		WHEN 'DEVELOPER' THEN 
+			IF (INC>1000) OR (:NEW.SALARY<97000) AND (:NEW.SALARY>120000 ) THEN
+                                DBMS_OUTPUT.PUT_LINE('Salary update out of range');
+				RAISE_APPLICATION_ERROR(-20111,'Update Cancelled');
+			ELSE	DBMS_OUTPUT.PUT_LINE('Updating');
+			END IF;
+		WHEN 'PROJECT LEADER' THEN
+			IF INC>2000 OR (:NEW.SALARY<110000 AND :NEW.SALARY>140000) THEN
+				DBMS_OUTPUT.PUT_LINE('Salary update out of range');
+				RAISE_APPLICATION_ERROR(-20111,'Update Cancelled');
+			ELSE	DBMS_OUTPUT.PUT_LINE('Updating');	
+			END IF;
+		WHEN 'PROJECT MANAGER' THEN
+			IF INC>3000 OR (:NEW.SALARY<97000 AND :NEW.SALARY>120000) THEN
+				DBMS_OUTPUT.PUT_LINE('Salary update out of range');
+				RAISE_APPLICATION_ERROR(-20111,'Update Cancelled');
+			ELSE	DBMS_OUTPUT.PUT_LINE('Updating');
+			END IF;
+		WHEN 'TECHNICAL HEAD' THEN
+			IF INC>3000 OR (:NEW.SALARY<140000 AND :NEW.SALARY>200000) THEN
+				DBMS_OUTPUT.PUT_LINE('Salary update out of range');
+				RAISE_APPLICATION_ERROR(-20111,'Update Cancelled');
+			ELSE	DBMS_OUTPUT.PUT_LINE('Updating');
+			END IF;
+		WHEN 'PROJECT DIRECTOR' THEN
+			IF INC>10000 OR (:NEW.SALARY<210000 AND :NEW.SALARY>270000) THEN
+				DBMS_OUTPUT.PUT_LINE('Salary update out of range');
+				RAISE_APPLICATION_ERROR(-20111,'Update Cancelled')
+			ELSE	DBMS_OUTPUT.PUT_LINE('Updating');
+			END IF;
+		WHEN 'CEO' THEN 
+			IF INC>20000 OR (:NEW.SALARY<220000 AND :NEW.SALARY>300000) THEN
+				DBMS_OUTPUT.PUT_LINE('Salary update out of range');
+				RAISE_APPLICATION_ERROR(-20111,'Update Cancelled');
+			ELSE	DBMS_OUTPUT.PUT_LINE('Updating');
+			END IF;
+			
+ 	END CASE;
+END;
+/
+
+8.2
+
+CREATE OR REPLACE TRIGGER PRJ_DETAILS_UPDATE BEFORE INSERT OR UPDATE ON PRJ_DETAILS
+FOR EACH ROW
+DECLARE
+	EMPCODE EMP.EMPCODE%TYPE;
+	V_EMP EMP%ROWTYPE;
+	V_EXP EMP_SKILL%ROWTYPE;
+BEGIN
+	EMPCODE := :NEW.LEAD_BY_EMPCODE;
+	SELECT * INTO V_EMP FROM EMP WHERE EMPCODE=EMPCODE;
+	SELECT * INTO V_EXP FROM EMP_SKILL WHERE EMPNO=EMPCODE;
+	IF ((V_EMP.DESIGNATION ='PROJECT LEADER' OR V_EMP.DESIGNATION= 'PROJECT MANAGER') AND (V_EXP.SKILL_EXPERIENCE >=18 )) THEN
+		DBMS_OUTPUT.PUT_LINE('Updating...');
+	ELSE
+		DBMS_OUTPUT.PUT_LINE('Update cancelled due to violation of Company Policy.');
+		RAISE_APPLICATION_ERROR(-20111,'Cannot Update Project Details');
+	END IF;
+END;
+/
+
+8.3
+
+CREATE OR REPLACE TRIGGER PRJ_DATE_UPDATE BEFORE UPDATE OF ACTUAL_END_DATE, ACTUAL_BUDGET ON PRJ_DETAILS
+FOR EACH ROW
+DECLARE
+	DATE_DIFF NUMBER(3);
+	ADD_BUDGET NUMBER(9,2);
+BEGIN
+	DATE_DIFF := :NEW.ACTUAL_END_DATE - :OLD.ACTUAL_END_DATE;
+	ADD_BUDGET := :NEW.ACTUAL_BUDGET - :OLD.ACTUAL_BUDGET;
+	IF DATE_DIFF>=90 AND ADD_BUDGET>0.15*:OLD.BUDGET_ALLOCATED THEN
+		DBMS_OUTPUT.PUT_LINE('Need to take Approval through proper channel');
+		RAISE_APPLICATION_ERROR(-20112,'Need to take Approval through proper channel');
+	ELSE
+		DBMS_OUTPUT.PUT_LINE('Updating...');
+	END IF;
+END;
+/
+
+8.4

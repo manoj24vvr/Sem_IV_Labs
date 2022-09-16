@@ -1,0 +1,138 @@
+create table EMP(
+EMPCODE number(3) CONSTRAINT PK_EMPNO Primary key,
+Name varchar2(10),
+QUALIFICATION varchar2(7) CONSTRAINT VALID_QUALIF check(Qualification in ('BTECH','MTECH','MSC','MCA','PHD')),
+PHONE number(10),
+EMAIL Varchar2(20) CONSTRAINT EMAIL_DOMAIN Check(Email like '%@digisol.com'),
+DESIGNATION VARCHAR2(20) CONSTRAINT VALID_DESIGNATION Check(DESIGNATION IN ('DEVELOPER','PROJECT LEADER','PROJECT MANAGER','TECHNICAL HEAD','PROJECT DIRECTOR','PROJECT LEADER','CEO')),
+SALARY NUMBER(7) CONSTRAINT SALARY_RANGE CHECK(salary between 97000 and 300000));
+
+
+
+create table family_dependents(
+EMPNO references EMP(EMPCODE),
+DEP_NAME varchar(20),
+relationship varchar(16),
+age number(3) constraint valid_age check(age between 1 and 130),
+primary key(empno,dep_name));
+
+
+create table medical_policy(
+empno references emp(EMPCODE),
+policyno varchar(7) constraint C_PNo check(policyno like 'MED%'),
+premium number(7) constraint C_P check(premium >1000),
+policydate date,
+constraint PK_MP primary key(empno,policyno));
+
+
+
+create table pay_check(
+empcode references emp(EMPCODE),
+pay_date date,
+regular_increment number(4) constraint VALID_REGU_INCREMENT check(regular_increment in (2000,3000,5000,7000,9000)),
+performance_incentive number(5),
+DA number(7),
+PF number(6),
+other_incentives number(4),
+advanc_tax number(5),
+primary key(empcode,pay_date));
+
+
+create table skill(
+skillID char(3) CONSTRAINT UNQ_SKILLID UNIQUE,
+SKILLNAME Varchar(20) CONSTRAINT UNQ_SKILLNAME UNIQUE);
+
+
+create table emp_skill(
+EMPNO number(3) CONSTRAINT FK_EMPNO References emp(empcode),
+skillID char(3) CONSTRAINT FK_SKILLID references skill (skillID) on delete cascade,
+skill_experience number(3) check(skill_experience > 0));
+
+
+create table client(
+clientid char(3) constraint PK_CLIENTID primary key check(clientid like 'C%'),
+name varchar2(10),
+phone char(14) constraint phone_format check(phone like ('+91-%') or phone like ('+81-%') or phone like ('+31-%') or phone like ('+48-%') or phone like ('+44-%')));
+
+
+create table PRJ_DETAILS(
+PRJID char(3) CONSTRAINT PK_PRJID check(PRJID LIKE 'P%') Primary key,
+PRJ_NAME Varchar2(10),
+START_DATE Date,
+END_DATE Date,
+ACTUAL_END_DATE DATE,
+LEAD_BY_EMPCODE number(3) CONSTRAINT FK_LEAD_EMP References EMP,
+BUDGET_ALLOCATED number(10,1),
+ACTUAL_BUDGET number(10,1),
+CONSTRAINT END_DATE_GREATER_START_DATE CHECK(END_DATE > START_DATE),
+check(ACTUAL_END_DATE >= END_DATE));
+
+
+create table work_exp(
+empcode number(3) references emp(EMPCODE),
+prjid char(3) references prj_details(PRJID),
+work_experience number(2) check(work_experience >= 0) not null,
+clientid references client(ClientID) on delete set null,
+rating char(1) check(rating in ('A','B','C')),
+primary key(empcode,prjid));
+
+
+DESC emp;
+desc family_dependents;
+desc medical_policy;
+desc pay_check;
+desc skill;
+desc emp_skill;
+desc client;
+desc PRJ_DETAILS;
+
+
+alter table emp
+add (reports_to number(3) constraint fk_reports_to_empcode references emp(EMPCODE));
+
+
+alter table skill
+add constraint skillid_start_with_S
+check(skillid like 'S%');
+
+
+alter table emp_skill
+add constraint pk_empno_skillid
+primary key(empno,skillid);
+
+
+alter table prj_details
+add constraint unq_PRJ_NAME
+UNIQUE(PRJ_NAME);
+
+
+
+ALTER TABLE CLIENT
+ADD (EMAIL varchar(20) CONSTRAINT VALID_EMAIL CHECK(email like '%@%.___'));
+
+
+alter table emp
+add constraint unq_phone
+unique(phone);
+
+
+alter table emp
+add constraint UNique_email
+unique(email);
+
+
+alter table medical_policy
+drop primary key;
+
+alter table medical_policy
+add constraint PK_MP
+primary key(empno,policyno,policydate);
+
+
+
+alter table medical_policy
+drop constraint C_p;
+
+alter table medical_policy
+add constraint C_P
+check(premium > 1000);

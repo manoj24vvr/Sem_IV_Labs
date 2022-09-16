@@ -1,0 +1,121 @@
+#include <iostream>
+using namespace std;
+int S[10] ={0};
+int* compCount(int A[], int n){
+        int count[10];
+        for(int i =0; i<n; i++)
+                count[i] =0;
+        for(int i =0 ; i<n-1; i++){
+                for(int j=i+1; j<n; j++){
+                        if(A[i]<A[j]){
+                                count[j] = count[j]+1;
+                        }else{
+                                count[i] = count[i]+1;
+                        }
+                }
+        }
+        for(int i =0; i<n; i++) {
+                S[count[i]] = A[i];
+        }
+        return S;
+}
+
+int main(){
+        int n;int arr[50];
+        cout<<"Enter number of elements "<<endl;
+        cin>>n;
+        cout<<"Enter the elements "<<endl;
+        for(int i =0; i<n; i++){
+                cin>>arr[i];}
+        compCount (arr,n);
+        cout<<"Sorted array is "<<endl;
+        for(int i = 0; i<n;i++){
+                cout<<S[i]<<endl;
+        }
+        return 0;
+}
+
+___________________________________________________________
+
+shre
+
+#include <iostream>
+using namespace std;
+
+int main() {
+        int n, arr[100], index[100] = {0};
+        cout << "Enter the number of elements: ";
+        cin >> n;
+        cout << "Enter the elements: ";
+        for(int i = 0; i < n; i++)
+                cin >> arr[i];
+        for(int i = 0; i < n-1; i++) {
+                for(int j = i+1; j < n; j++) {
+                        if(arr[i] >= arr[j])
+                                index[i]++;
+                        else
+                                index[j]++;
+                }
+        }
+        cout << "The sorted array is: ";
+        for(int i = 0; i < n; i++) {
+                for(int j = 0; j < n; j++) {
+                        if(index[j] == i)
+                                cout << arr[j] << " ";
+                }
+        }
+        cout << endl;
+        return 0;
+}
+
+____________________________________________________________________________
+
+
+#include <iostream>
+using namespace std ;
+
+void countSort(int array[], int size) {
+          int output[10];
+            int count[10];
+              int max = array[0];
+
+                for (int i = 1; i < size; i++) {
+                            if (array[i] > max)
+                                          max = array[i];
+                              }
+
+                  for (int i = 0; i <= max; ++i) {
+                              count[i] = 0;
+                                }
+
+                    for (int i = 0; i < size; i++) {
+                                count[array[i]]++;
+                                  }
+
+                      for (int i = 1; i <= max; i++) {
+                                  count[i] += count[i - 1];
+                                    }
+
+                        for (int i = size - 1; i >= 0; i--) {
+                                    output[count[array[i]] - 1] = array[i];
+                                        count[array[i]]--;
+                                          }
+
+                          for (int i = 0; i < size; i++) {
+                                      array[i] = output[i];
+                                        }
+}
+
+void printArray(int array[], int size) {
+          for (int i = 0; i < size; i++)
+                      cout << array[i] << " ";
+            cout << endl;
+}
+
+int main() {
+          int array[] = {4, 2, 2, 8, 3, 3, 1};
+            int n = sizeof(array) / sizeof(array[0]);
+            cout<<"Array after sorting using comparision counting algorithm: "<<endl;
+              countSort(array, n);
+                printArray(array, n);
+}

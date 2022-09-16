@@ -1,0 +1,203 @@
+insert into EMP values(100,'RAJESH','BTECH',1234567890,'rajesh@digisol.com','DEVELOPER',100000,null);
+insert into EMP values(101,'RAVI','MTECH',1234567891,'ravi@digisol.com','PROJECT LEADER',110000,NULL);
+insert into EMP values(102,'VIJAY','BTECH',1234567892,'vijay@digisol.com','PROJECT MANAGER',120000,null);
+insert into EMP values(108,'AJAY','BTECH',1234567893,'ajay@digisol.com','TECHNICAL HEAD',130000,null);
+insert into EMP values(110,'BHASKAR','MTECH',1234567894,'bhaskar@digisol.com','PROJECT DIRECTOR',140000,null);
+insert into EMP values(106,'RAJ','MSC',1234567895,'raj@digisol.com','PROJECT LEADER',150000,null);
+insert into EMP values(105,'MANISH','MCA',1234567896,'manish@digisol.com','DEVELOPER',160000,null);
+insert into EMP values(103,'PRASAD','PHD',1234567897,'prasad@digisol.com','CEO',200000,null);
+insert into EMP values(104,'RAKESH','MTECH',1234566789,'rakesh@digisol.com','DEVELOPER',160000,null);
+insert into EMP values(107,'RAKSH','MTECH',1234567898,'raksh@digisol.com','DEVELOPER',170000,null);
+insert into EMP values(109,'VENKAT','MCA',1234567899,'venkat@digisol.com','PROJECT LEADER',110000,null);
+insert into EMP values(113,'BALAJI','MCA',1234569871,'balaji@digisol.com','PROJECT DIRECTOR',140000,null);
+insert into EMP values(111,'NIKHITH','BTECH',1236547895,'nikhith@digisol.com','TECHNICAL HEAD',130000,null);
+insert into EMP values(112,'PAVAN','MTECH',1236549876,'pavan@digisol.com','PROJECT MANAGER',150000,null);
+
+
+update emp set reports_to = 101 where empcode = 100;
+update emp set reports_to = 102 where empcode = 101;
+update emp set reports_to = 110 where empcode = 102;
+update emp set reports_to = 102 where empcode = 108;
+update emp set reports_to = 106 where empcode = 110;
+update emp set reports_to = 110 where empcode = 106;
+update emp set reports_to = 106 where empcode = 105;
+update emp set reports_to = 109 where empcode = 104;
+update emp set reports_to = 104 where empcode = 107;
+update emp set reports_to = 103 where empcode = 109;
+update emp set reports_to = 112 where empcode = 113;
+update emp set reports_to = 105 where empcode = 111;
+update emp set reports_to = 111 where empcode = 112;
+
+
+
+
+insert into skill values('S1','Full Stack');
+insert into skill values('S2','Python');
+insert into skill values('S3','Java');
+insert into skill values('S4','C++');
+insert into skill values('S6','Oracle');
+insert into skill values('S7','Android');
+insert into skill values('S8','AZURE');
+insert into skill values('S9','DOT NET');
+insert into skill values('S10','IOS');
+insert into skill values('S11','ML');
+
+
+insert into client values('C1','ABC','+48-87489389','aaa@abc.com');
+insert into client values('C2','LTS','+91-78389397','bbb@lts.com');
+insert into client values('C3','RK','+44-67838934','ccc@rk.com');
+insert into client values('C4','MMA','+31-77839093','ddd@mma.com');
+insert into client values('C5','AKS','+81-66822903','eee@aks.com');
+insert into client values('C6','GKS','+91-75628982','fff@gks.com');
+insert into client values('C7','B&B','+91-64839839','ggg@bb.com');
+insert into client values('C8','ABT','+44-67554667',null);
+insert into client values('C9','XYZ','+48-25694598','xyz@ab.com');
+insert into client values('C10','GHS','+91-25369874','abc@hkd.com');
+
+
+
+
+insert into emp_skill values(100,'S1',15);
+insert into emp_skill values(100,'S3',10);
+insert into emp_skill values(101,'S1',6);
+insert into emp_skill values(101,'S2',10);
+insert into emp_skill values(102,'S4',18);
+insert into emp_skill values(110,'S1',14);
+insert into emp_skill values(110,'S6',20);
+insert into emp_skill values(106,'S2',10);
+insert into emp_skill values(106,'S6',12);
+insert into emp_skill values(106,'S8',10);
+insert into emp_skill values(108,'S9',5);
+insert into emp_skill values(108,'S6',18);
+insert into emp_skill values(105,'S7',12);
+insert into emp_skill values(105,'S10',11);
+insert into emp_skill values(101,'S3',7);
+insert into emp_skill values(102,'S11',12);
+
+
+
+insert into prj_details values('P1','SPYDER','10/Jan/2020','11/Oct/2022','12/Oct/2022',102,2000000,1990000);
+insert into prj_details values('P2','APOLLO','01-Jan-2019','10-Jul-2021','11-Jul-2021',108,3000000,3600000);
+insert into prj_details values('P3','UNICORN','03/Nov/2021','10/Oct/2023','10/Oct/2023',106,7500000,8000000);
+insert into prj_details values('P4','ZEUS','28/Feb/2020','09/Jun/2021','10/Jan/2022',110,5500000,5000000);
+insert into prj_details values('P5','JUPITER','07/Aug/2018','04/Feb/2020','01/Nov/2020',110,9000000,9000000);
+insert into prj_details values('P6','MARS','21/Feb/2019','07/Aug/2020','09/Dec/2020',113,8000000,9000000);
+insert into prj_details values('P8','PLUTO','21/Mar/2019','10/Sep/2020','15/Jan/2021',112,8000000,9000000);
+insert into prj_details values('P7','SATURN','21/Feb/2020','08/Aug/2021','10/Dec/2021',108,8500000,9400000);
+insert into prj_details values('P9','SUN','25/APR/2020','14/NOV/2020','23/FEB/2021',111,9600000,9800000);
+
+
+
+insert into medical_policy values(100,'MED01',10000,'10/Dec/2020');
+insert into medical_policy values(101,'MED03',12000,'15/Dec/2020');
+insert into medical_policy values(100,'MED01',10000,'10/Jan/2021');
+insert into medical_policy values(101,'MED03',12000,'15/Oct/2021');
+insert into medical_policy values(103,'MED04',9000,'21/Jan/2021');
+insert into medical_policy values(102,'MED05',15000,'22/Jan/2021');
+
+
+
+insert into family_dependents values(100,'AJITH','SON',12);
+insert into family_dependents values(100,'PRATHVI','DAUGHTER',9);
+insert into family_dependents values(101,'AARYA','DAUGHTER',17);
+insert into family_dependents values(101,'AKANKSH','SON',11);
+insert into family_dependents values(101,'ANITHA','SPOUSE',43);
+insert into family_dependents values(102,'ANIKET','BROTHER',25);
+
+
+
+insert into pay_check values(100,'01/Dec/2020',2000,123,456,789,2500,5000);
+insert into pay_check values(101,'01/MAR/2020',3000,2400,5000,2300,5000,7000);
+insert into pay_check values(102,'01/Dec/2020',3000,2500,5400,2400,3600,7000);
+insert into pay_check values(100,'01/Jan/2021',3000,3000,4500,5000,450,4000);
+insert into pay_check values(101,'01/MAR/2021',5000,3500,4000,5500,2100,4000);
+insert into pay_check values(102,'01/Jan/2021',5000,3600,4600,5800,NULL,9000);
+insert into pay_check values(108,'02/Jan/2021',7000,2500,1400,3600,900,3000);
+insert into pay_check values(111,'04/FEB/2021',9000,3500,1500,4600,800,4000);
+
+
+
+insert into work_exp values(100,'P1',20,'C1','A');
+insert into work_exp values(100,'P3',15,'C3','A');
+insert into work_exp values(101,'P1',16,'C1','A');
+insert into work_exp values(102,'P2',18,'C2','B');
+insert into work_exp values(102,'P1',18,'C1','A');
+insert into work_exp values(108,'P2',12,'C2','C');
+insert into work_exp values(106,'P3',20,'C3','C');
+insert into work_exp values(106,'P4',10,'C4','C');
+insert into work_exp values(105,'P2',19,'C2','B');
+insert into work_exp values(110,'P4',12,'C4','B');
+insert into work_exp values(110,'P5',16,'C8','A');
+insert into work_exp values(105,'P5',5,'C5','C');
+insert into work_exp values(111,'P5',5,'C5','C');
+insert into work_exp values(108,'P5',6,'C4','C');
+
+
+
+COMMIT;
+delete from emp where empcode = 100;
+
+ORA-02292: integrity constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.SYS_C0082728309) 
+	violated - child record found ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+# Foreign keys
+
+
+
+update emp 
+set email = 'ajesh@digital.com' 
+where empcode = 111;
+
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.EMAIL_DOMAIN) violated ORA-06512:
+ at "SYS.DBMS_SQL", line 1721
+
+# @digisol.com
+
+
+
+update work_exp 
+set prjid = 'P9'
+where empcode = 111;
+
+
+select * from client;
+
+COMMIT;
+delete from client
+where clientid = 'C1';
+
+# Deletion successful
+
+
+select * from family_dependents;
+COMMIT;
+delete from family_dependents
+where empno = 100;
+
+# Deletion successful - 2 rows
+
+ROLLBACK;
+
+
+UPDATE EMP
+SET SALARY = SALARY *1.1
+WHERE DESIGNATION = 'DEVELOPER';
+
+# UPDATE SUCCESSFUL
+
+
+
+UPDATE EMP
+SET EMPCODE = 106
+WHERE REPORTS_TO = 108;
+
+# UPDATE SUCCESSFUL
+
+
+UPDATE EMP
+SET EMPCODE = 117
+WHERE REPORTS_TO = 108;
+ORA-02291: integrity constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.FK_REPORTS_TO_EMPCODE) violated
+ - parent key not found ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+# NO ROW IS UPDATED

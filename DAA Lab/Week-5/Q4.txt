@@ -1,0 +1,292 @@
+#include <iostream>
+#define SIZE 10
+using namespace std;
+
+typedef struct node{
+int data;
+struct node *next;
+} node_o;
+
+node_o hashTable[SIZE];
+int hash_fnc(int k){
+        return k%SIZE;
+}
+void initializeHT(){
+        for(int i =0; i<SIZE; i++){
+                hashTable[i].data = -1;
+                hashTable[i].next = NULL;
+        }
+}
+
+
+node_o *searchKey (int key){
+        int pos = hash_fnc (key);
+        cout<<"Pos is "<<pos<<endl;
+        node_o *bucket = &(hashTable[pos]);
+        node_o *ptr = bucket;
+        while (ptr->next !=NULL){
+                ptr = ptr->next;
+                if (ptr->data == key){
+                        return ptr;
+                }}
+        return NULL;
+}
+
+bool insertKey (int key){
+        if (searchKey(key)==NULL){
+                node_o *ele;
+                ele = new node_o;
+                ele->data = key;
+                ele->next = NULL;
+                int pos = hash_fnc(key);
+                node_o *bucket = &(hashTable[pos]);
+                ele->next = bucket->next;
+                bucket->next  =ele;
+                return true;
+        }
+        else{
+                return false;
+        }
+}
+int main(){
+        int count;
+        int key;
+        initializeHT();
+        cout<<"Give number of keys "<<endl;
+        cin>>count;
+        for (int i = 0; i<count; i++){
+                cout<<"Enter next key " <<endl;
+                cin>>key;
+                bool status = insertKey(key);
+                if (status = true){
+                        cout<<"Successfully inserted "<<key<<endl;
+                }else{
+                        cout<<"Failed to insert "<<key<<endl;
+                }
+        }
+        while(true){
+                cout<<"Enter key to be searched "<<endl;
+                cin>>key;
+                node_o *s = searchKey(key);
+                if (s==NULL){
+                        cout<<key<< " not found"<<endl;
+                } else{
+                        cout<<s->data<<" found!"<<endl;
+                }
+        }
+        return 0;
+}
+
+
+____________________________________________________________
+
+shre
+
+#include <iostream>
+using namespace std;
+
+struct extend{
+        int data;
+        extend *next;
+};
+
+struct main_arr {
+        int index;
+        int data;
+        main_arr *next;
+        extend *branch;
+};
+
+// f(x) = 2x + 3
+int hash_fn(int n) {
+        return 2 * n + 3;
+}
+
+main_arr* init_arr(main_arr *curr_node, int index, int max_index) {
+        main_arr *temp = new main_arr;
+        temp -> index = index;
+        temp -> branch = NULL;
+        if(index == max_index) {
+                temp -> next = NULL;
+        }
+        else
+                temp -> next = init_arr(temp -> next, index + 1, max_index);
+        curr_node = temp;
+        return curr_node;
+}
+
+//test initialisation of the main array
+void print_ind(main_arr *head) {
+        if(head == NULL)
+                return;
+        cout << head -> index << " ";
+        print_ind(head -> next);
+}
+
+int main() {
+        int n, size = 5, num[100];
+        cout << "Enter the number of integers to insert: ";
+        cin >> n;
+        cout << "Enter the integers: ";
+        for(int i = 0; i < n; i++) {
+                cin >> num[i];
+        }
+        main_arr *head = NULL;
+        head = init_arr(head, 0, size - 1);
+        print_ind(head);
+        cout << endl;
+        return 0;
+}
+
+__________________________________________________________________________________
+
+#include<iostream>
+#include<cstdlib>
+#include<string>
+#include<cstdio>
+using namespace std;
+const int T_S = 200;
+
+class HashTableEntry
+{
+        public:
+                int k;
+                int v;
+                HashTableEntry(int k, int v)
+                {
+                        this->k= k;
+                        this->v = v;
+                }
+};
+
+class HashMapTable {
+           private:
+                         HashTableEntry **t;
+                            public:
+                               HashMapTable() {
+                                                t = new HashTableEntry * [T_S];
+                                                         for (int i = 0; i< T_S; i++) {
+                                                                             t[i] = NULL;
+                                                                                      }
+                                                               }
+                                     int HashFunc(int k) {
+                                                      return k % T_S;
+                                                            }
+                                           void Insert(int k, int v) {
+                                                            int h = HashFunc(k);
+                                                                     while (t[h] != NULL && t[h]->k != k) {
+                                                                                         h = HashFunc(h + 1);
+                                                                                                  }
+                                                                              if (t[h] != NULL)
+                                                                                                  delete t[h];
+                                                                                       t[h] = new HashTableEntry(k, v);
+                                                                                             }
+                                                 int SearchKey(int k) {
+                                                                  int h = HashFunc(k);
+                                                                           while (t[h] != NULL && t[h]->k != k) {
+                                                                                               h = HashFunc(h + 1);
+                                                                                                        }
+                                                                                    if (t[h] == NULL)
+                                                                                                        return -1;
+                                                                                             else
+                                                                                                                 return t[h]->v;
+                                                                                                   }
+                                                       void Remove(int k) {
+                                                                        int h = HashFunc(k);
+                                                                                 while (t[h] != NULL) {
+                                                                                                     if (t[h]->k == k)
+
+       break;
+                                                                                                                 h =
+HashFunc(h + 1);
+
+     }                                                                                             7,0-1          1%
+                                                                                          if (t[h] == NULL) {
+                                                                                                              cout<<"No Element Found!!"<<k<<endl;                                                                      10,1-8         6%
+
+     return;                                                                                       12,1-8         9%
+
+              } else {                                                                             14,1-8        12%
+
+                                  delete t[h];                                                     16,1-8        15%
+
+                                           }                                                       18,1          17%
+                                                                                                   cout<<"Element Deleted."<<endl;                                                                                      20,1          20%
+                                                                                                         }
+                                                             ~HashMapTable() {
+                                                                              for (int i = 0; i < T_S; i++) {    25%
+                                                                                                  if (t[i] != NULL)
+                                                                                                   25,1-8        27%
+    delete t[i];                                                                                   26,1-8        28%
+                                                                                                                 delete[] t;                                                                                            28,1-8        31%
+
+     }                                                                                             30,1-8        33%
+                                                                                    }
+};
+int main() {                                                                                       33,1-8        38%
+           HashMapTable hash;
+              int k, v;                                                                            35,1-8        40%
+                 int c;
+                      cout<<"1.Insert"<<endl;
+                           cout<<"2.Search"<<endl;
+                                cout<<"3.Delete"<<endl;
+                                     cout<<"4.Exit"<<endl;
+
+                                        while (1) {
+                                                        cout<<"Enter choice: ";
+                                                                cin>>c;
+                                                                      switch(c) {
+                                                                                       case 1:
+                                                                                                           cout<<"Enter Element: ";                                                                                     47,1-8        57%
+
+  cin>>v;                                                                                          49,1-8        59%
+
+              cout<<"Enter Key: ";
+
+                          cin>>k;                                                                  52,1-8        63%
+
+                                      hash.Insert(k, v);                                           54,1-8        65%
+                                                                                                                                                                    break;
+                                                                                                   56,1-8        68%
+                                                        case 2:
+
+                                                           cout<<"Enter Key: ";                    58,1-8        70%
+                                                                                                                                                                                            cin>>k;
+@@@                                                                                                                                                                                                     if (hash.SearchKey(k) == -1) {72%
+                                                                                                                                                                                                                               cout<<"No Element Found!!"<<endl;
+
+                                                                                                   63,1-8        75%
+    continue;
+
+@@@                                                                                                                                  } else {                                                                           65,1-8        77%
+                                                                                                                     
+                                       cout<<"Element at Key "<<k<<" : ";
+
+@@@                                                                                                                                                                        cout<<hash.SearchKey(k)<<endl;               69,1-8        80%
+                                                                                                                     @@@                                                                                                                                                                                    }                                71,1-8        81%
+@@@                                                                                                                                                                                                              break; 72,1-8        82%
+
+                                                                                                     case 3:
+                                                                                                   74,1          85%
+@@@                                                                                                     cout<<"Enter Key: ";                                                                                            76,1-8        85%
+                                                                                                                                                                                                                                         cin>>k;                                                                                             79,1-8        86%
+
+                                                                                                   81,1-8        88%
+           hash.Remove(k);                                                                         82,1-8        88%
+
+                                                                                                   84,1-8        89%
+                    break;                                                                         85,1-8        89%
+
+                                                                                                   87,1-8        91%
+                             case 4:                                                               88,1-8        91%
+
+@@@                                                                                                                                                  exit(1);                                                           90,1-8        92%
+@@@                                                                                                                                                                                                                     91,1-8        93%
+                                         default:                                                  92,1-8        93%
+                                                                                                                     
+                                            cout<<"\n Enter Valid Choice \n";
+
+@@@                                                                                                                                                                    }                                                95,1-8        95%
+                                                                         }
+                                           return 0;
+}

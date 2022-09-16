@@ -1,0 +1,293 @@
+#include <iostream>
+using namespace std;
+typedef struct node{
+
+        int data;
+        int height;
+        struct node *left;
+        struct node *right;
+}node_t;
+int findHeight(struct node *p){
+        if (p == NULL){
+                return -1;
+        }
+
+        int lHeight = findHeight(p->left);
+        int rHeight = findHeight(p->right);
+        return lHeight > rHeight ? lHeight + 1 : rHeight +1;
+}
+
+int bf (node_t *b){
+        if (b == NULL){
+                return 0;
+        }
+
+        int lHeight = findHeight(b->left);
+        int rHeight = findHeight(b->right);
+        return lHeight-rHeight;
+}
+
+struct node * llRotat(struct node *n){
+        cout<<"LL"<<endl;
+        struct node *p;
+        struct node *tp;
+        p = n;
+        tp = p->left;
+        p->left = tp->right;
+        tp->right = p;
+        return tp;
+}
+
+node_t * rrRotat(struct node *n){
+        cout<<"RR"<<endl;
+        struct node *p;
+        struct node *tp;
+        p = n;
+        tp = p->right;
+        p->right = tp->left;
+        tp->left = p;
+        return tp;
+}
+node_t * rlRotat(struct node *n){
+        cout<<"RL"<<endl;
+        struct node *p;
+        struct node *tp;
+        struct node *tp2;
+        p = n;
+        tp = p->right;
+        tp2 =p->right->left;
+        p -> right = tp2->left;
+        tp ->left = tp2->right;
+        tp2 ->left = p;
+        tp2->right = tp;
+        return tp2;
+
+}
+struct node * lrRotat(struct node *n){
+        cout<<"LR"<<endl;
+        struct node *p;
+        struct node *tp;
+        struct node *tp2;
+        p = n;
+        tp = p->left;
+        tp2 =p->left->right;
+        p -> left = tp2->right;
+        tp ->right = tp2->left;
+        tp2 ->right = p;
+        tp2->left = tp;
+        return tp2;
+
+}
+
+node_t *balance(node_t *t){
+
+        int bal_factor = bf(t);
+        if (bal_factor > 1) {
+                if (bf(t->left) > 0)
+                        t = llRotat(t);
+                else
+                        t = lrRotat(t);
+        } else if (bal_factor < -1) {
+                if (bf(t->right) > 0)
+                        t = rlRotat(t);
+                else
+                        t = rrRotat(t);
+        }
+        return t;
+}
+
+node_t *insertChild(node_t *r,int data){
+        if(r==NULL){
+                node_t *n;
+                n = new node_t;
+                n->data = data;
+                r = n;
+                r->left = r->right = NULL;
+                r->height = 0;
+                return r;
+        }else if (data < r->data){
+                r->left = insertChild(r->left,data);
+        }else{
+                r->right = insertChild(r->right,data);
+	}
+        return balance(r) ;
+}
+
+node_t *getChildren(node_t * avlTree){
+        int child;
+        cout<<"Next ele please"<<endl;
+        cin>>child;
+        avlTree = insertChild(avlTree, child);
+        return avlTree;
+}
+
+
+void printNode(node_t *node){
+        if (node == NULL){
+                cout<<"NULL";
+        }else{
+                cout<<node->data;//<<" Height: "<<node->height;
+        }
+}
+
+void printTree(node_t *avlTree){
+        if(avlTree!=NULL){
+                printNode(avlTree);
+                cout<<" :L: ";
+                printNode(avlTree->left);
+                cout<<" :R: ";
+                printNode(avlTree->right);
+                cout<<endl;
+                printTree(avlTree->left);
+                printTree(avlTree->right);
+        }
+}
+
+node_t *createTree(node_t * avlTree){
+        int num;
+        cout<< "Get number of elements"<<endl;
+        cin>> num;
+        cout<<"Get root element"<<endl;
+        cin>> avlTree->data;
+        avlTree -> height = 0;
+        avlTree->left = avlTree->right = NULL;
+        for (int i = num-1; i>0; i--){
+                avlTree = getChildren(avlTree);
+        }
+        return avlTree;
+}
+
+
+
+int main(){
+
+        int ele;
+        node_t *avlTree = new node_t;
+        avlTree = createTree(avlTree);
+        cout<<"Tree created"<<endl;
+        printTree(avlTree);
+        cout<<"Tree printed"<<endl;
+        cout<<"Add an element: "<<endl;
+        cin>>ele;
+        avlTree = insertChild(avlTree, ele);
+        printTree(avlTree);
+        return 0;
+}
+
+
+_____________________________________________________________________________________________________________
+
+#include<iostream>
+using namespace std;
+struct node {
+int val;
+node *l;
+node *r;
+int height;
+};
+node* getNewNode(int x){
+        node *temp = new node;
+        temp->val = x;
+        temp->l = NULL;
+        temp->r = NULL;
+        temp->height = 0;
+        return temp;
+}
+node* rootNode = NULL;
+
+int height(node *root)
+{
+        if(root==NULL)
+        {
+                return 0;
+        }
+        return 1+max(height(root->l),height(root->r));
+
+}
+node* rightRotate(node *root)
+{
+        node *x = root->l;
+        node *t2=x->r;
+        x->r=root;
+        root->l=t2;
+        root->height = height(root);
+        x->height = height(x);
+        return x;
+}
+node* leftRotate(node *root){
+        node *x = root->r;
+        node *t1 = x->l;
+        x->l = root;
+        root->r=t1;
+        root->height = height(root);
+        x->height = height(x);
+        return x;
+}
+int getBalance(node *root)
+{
+        if(root==NULL){
+                return 0;
+        }
+        return height(root->l)-height(root->r);
+}
+node* insert(node* root,int x){
+                if(root==NULL){
+                        node *temp = getNewNode(x);
+                        return temp;
+                }
+                if(x < root->val){
+                        root->l = insert(root->l,x);
+                }
+                else if(x > root->val)
+                {
+                        root->r = insert(root->r,x);
+                }
+                else
+                {
+                        return root;
+                }
+                root->height = height(root);
+                int balance = getBalance(root);
+                if(balance > 1 and x < root->l->val) return rightRotate(root);
+                if(balance < -1 and x > root->r->val) return leftRotate(root);
+                if(balance>1 and x > root->l->val)
+                {
+                        root -> l = leftRotate(root->l);
+                        return rightRotate(root);
+                }
+                if(balance<-1 and x < root->r->val)
+                {
+                        root->r = rightRotate(root->r);
+                        return leftRotate(root);
+                }
+                return root;
+}
+void inorder(node *root)
+{
+        if(root==nullptr)
+        {
+                return;
+        }
+        inorder(root->l);
+        cout<<(root->val)<<' ';
+        inorder(root->r);
+}
+
+int main(){
+        cout<<"The number of nodes - ";
+        int n;cin>>n;
+        for(int i = 0 ; i < n;i++)
+        {
+                int a;
+                cin>>a;
+                if(i==0) rootNode = insert(rootNode,a);
+                else insert(rootNode,a);
+        }
+        cout<<"The Inorder Traversaal of the AVL tree - \n";
+        inorder(rootNode);
+        cout<<'\n';
+        insert(rootNode,6);
+        inorder(rootNode);
+        cout<<'\n';
+        return 0;
+}

@@ -1,0 +1,351 @@
+SET SERVEROUTPUT ON
+
+
+6.1
+
+SET SERVEROUTPUT ON
+DECLARE
+
+num1 number(5);
+num2 number(5);
+rev number(5) := 0;
+
+BEGIN
+
+num1:=&num1;
+while num1>0
+loop
+num2:=num1 mod 10;
+rev:=num2+(rev*10);
+num1:=floor(num1/10);
+end loop;
+
+dbms_output.put_line('Reversed number is: '||rev);
+
+END;
+/
+
+6.2
+
+DECLARE
+
+s VARCHAR2(10);
+l VARCHAR2(20);
+t VARCHAR2(10);
+
+BEGIN
+
+s:=&s;
+FOR i IN REVERSE 1..Length(s) LOOP  
+l := Substr(s, i, 1);  
+t := t||''||l;  
+END LOOP;
+IF t = s THEN 
+dbms_output.Put_line(t||''||' is palindrome');  
+ELSE 
+dbms_output.Put_line(t||''||' is not a palindrome');  
+END IF;  
+
+END; 
+/
+
+6.3
+
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_sentence varchar2(100);
+--v_sentence varchar(100);
+v_vowels number:=0;
+v_consonents number:=0;
+v_numbers number:=0;
+v_special_char number:=0;
+C char;
+
+BEGIN
+
+v_sentence := '&v_sentence';
+
+FOR i IN 1..LENGTH(v_sentence) LOOP
+	
+	C:= SUBSTR(v_sentence, i, 1);
+
+	IF C IN ('A', 'E', 'I', 'O', 'U' ) OR C IN ( 'a', 'e', 'i', 'o', 'u' ) THEN v_vowels := v_vowels + 1;
+
+	ELSIF C IN ('!','#','$','%','&','(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\',']','^','_','`','{','|','}','~') THEN  v_special_char := v_special_char + 1;
+	
+	ELSIF C IN ('0','1','2','3','4','5','6','7','8','9') THEN v_numbers := v_numbers + 1;
+
+	ELSIF C NOT IN (' ') THEN v_consonents := v_consonents + 1;
+	
+	END IF;
+END LOOP;
+
+dbms_output.Put_line('No. of Vowels: ' || v_vowels);
+dbms_output.Put_line('No. of Consonants: ' || v_consonents);
+dbms_output.Put_line('No. of Numbers: ' || v_numbers); 
+dbms_output.Put_line('No. of Special Characters: ' || v_special_char); 
+
+END;
+/
+
+6.4
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_emp_code number(3);
+
+v_emp emp%rowtype;
+
+BEGIN
+
+v_emp_code := &v_emp_code;
+
+SELECT * INTO v_emp FROM emp where empcode = v_emp_code;
+
+dbms_output.Put_line('Employee Code of Employee is: ' || v_emp.empcode);
+dbms_output.Put_line('Name of Employee is:          ' || v_emp.name);
+dbms_output.Put_line('Qualification of Employee is: ' || v_emp.qualification);
+dbms_output.Put_line('Phone of Employee is:         ' || v_emp.phone);
+dbms_output.Put_line('Email of Employee is:         ' || v_emp.email);
+dbms_output.Put_line('Designation of Employee is:   ' || v_emp.designation);
+dbms_output.Put_line('Salary of Employee is:        ' || v_emp.salary);
+dbms_output.Put_line('Given Employee Reports To Employee with Employee Code: ' || v_emp.reports_to);
+
+END;
+/
+
+6.5
+
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_empcode number(3);
+v_prj_id char(2);
+v_rating char;
+v_incentive number;
+
+v_work work_exp%rowtype;
+v_emp emp%rowtype;
+v_prj prj_details%rowtype;
+--v_paycheck pay_check%rowtype;
+
+BEGIN
+
+v_empcode := &v_empcode;
+v_prj_id := '&v_prj_id';
+
+SELECT * INTO v_work FROM work_exp WHERE empcode = v_empcode AND prjid = v_prj_id;
+SELECT * INTO v_emp FROM emp WHERE empcode = v_empcode;
+SELECT * INTO v_prj FROM prj_details WHERE prjid = v_prj_id;
+--SELECT * INTO v_paycheck FROM pay_check WHERE empcode = v_empcode;
+
+SELECT v_work.rating INTO v_rating FROM work_exp WHERE empcode = v_empcode AND prjid = v_prj_id;
+--v_rating := v_work.rating;
+
+IF v_rating = 'A' THEN v_incentive := 10000;
+
+ELSIF v_rating = 'B' THEN v_incentive := 5000;
+
+ELSIF v_rating = 'c' THEN v_incentive := 3000;
+
+ELSE v_incentive :=0;
+
+END IF;
+
+dbms_output.Put_line('Employee Number: ' || v_work.empcode);
+dbms_output.Put_line('Employee Name:   ' || v_emp.name);
+dbms_output.Put_line('Salary:          ' || v_emp.salary);
+dbms_output.Put_line('Project Name:    ' || v_prj.prj_name);
+dbms_output.Put_line('Rating:          ' || v_work.rating);
+dbms_output.Put_line('Incentive:       ' || v_incentive);
+dbms_output.Put_line('Total Salary:    ' || to_char(v_emp.salary+v_incentive));
+
+dbms_output.Put_line('Other Iincentives Updated: ' ||  v_incentive);
+
+UPDATE pay_check SET other_incentives =  other_incentives + v_incentive WHERE empcode = v_empcode;
+
+END;
+/
+
+6.6
+
+SET SERVEROUTPUT ON
+DECLARE
+
+v_emp_code number(3) := 100;
+--v_pay_date date := '01-JAN-2021';
+
+v_emp emp%rowtype;
+v_pay pay_check%rowtype;
+
+BEGIN
+
+SELECT * INTO v_emp FROM emp WHERE empcode = v_emp_code;
+SELECT * INTO v_pay FROM pay_check WHERE empcode = v_emp_code AND pay_date = to_date('01-01-2021', 'DD-MM-YYYY');
+
+dbms_output.Put_line('Name:              ' || v_emp.name);
+dbms_output.Put_line('Basic_Salary:      ' || v_emp.salary);
+dbms_output.Put_line('Regular Increment: ' || v_pay.Regular_Increment);
+dbms_output.Put_line('Increased Basic Salary: ' || to_char(v_emp.Salary+v_pay.Regular_Increment));
+dbms_output.Put_line('Performance incentive:  ' || v_pay.performance_incentive);
+dbms_output.Put_line('DA is:                  '|| v_pay.da*0.5);
+--dbms_output.Put_line('DA is:                '|| to_char(v_pay.da*0.5));
+dbms_output.Put_line('PF is:                  ' || v_pay.pf*0.12);
+--dbms_output.Put_line('PF is:                ' || to_char(v_pay.pf*0.12));
+dbms_output.Put_line('Other Incentive:        ' || v_pay.other_incentives);
+dbms_output.Put_line('Advance tax paid:       ' || v_pay.advanc_tax);
+dbms_output.Put_line('Monthly Gross Salary:   ' || to_char(v_emp.Salary+v_pay.Regular_Increment+v_pay.Performance_incentive+v_pay.DA+v_pay.PF+v_pay.other_incentives));
+dbms_output.Put_line('Monthly Take home salary: ' ||  to_char(v_emp.Salary+v_pay.Regular_Increment+v_pay.Performance_incentive+v_pay.DA+v_pay.PF+v_pay.other_incentives-v_pay.PF-v_pay.advanc_tax));
+
+END;
+/
+
+6.7
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_emp IS SELECT empcode, name, salary, regular_increment, performance_incentive, other_incentives, advanc_tax FROM emp NATURAL JOIN pay_check 
+WHERE pay_date = to_date('01-01-2021', 'DD-MM-YYYY');
+
+c_da pay_check.da%type;
+c_pf pay_check.pf%type;
+c_incsal emp.salary%type;
+c_mgross emp.salary%type;
+c_home emp.salary%type;
+
+BEGIN
+
+FOR i IN c_emp LOOP
+
+	c_incsal := i.salary + i.regular_increment;
+	c_da := c_incsal*0.5;
+	c_pf := c_incsal*0.12;
+	c_mgross := i.salary + i.regular_increment + i.performance_incentive + c_da + c_pf + i.other_incentives;
+	c_home := c_mgross - c_pf - i.advanc_tax;
+	dbms_output.put_line('Name:           '|| i.name);
+	dbms_output.put_line('Basic_Salary:   '|| i.salary);
+	dbms_output.put_line('Increased Basic Salary:   '|| c_incsal);
+	dbms_output.put_line('Performance Incentive:    '|| i.performance_incentive);
+	dbms_output.put_line('DA:  '|| c_da);
+	dbms_output.put_line('PF:  '|| c_pf);
+	dbms_output.put_line('Other Incentive:          '|| i.other_incentives);
+	dbms_output.put_line('Advance Tax Paid:         '|| i.advanc_tax);
+	dbms_output.put_line('Monthly Gross Salary:     '|| c_mgross);
+	dbms_output.put_line('Monthly Take Home Salary: '|| c_home);
+
+END LOOP;
+
+END;
+/
+
+6.8
+
+
+6.9
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_prj IS SELECT empcode, prj_name, lead_by_empcode FROM emp NATURAL JOIN work_exp NATURAL JOIN prj_details WHERE actual_budget > budget_allocated;
+
+prj_lead emp.name%type;
+
+BEGIN
+
+FOR i IN c_prj LOOP
+
+	SELECT name INTO prj_lead FROM emp WHERE empcode = i.lead_by_empcode;
+	dbms_output.put_line('Name of the Project Leader: ' || prj_lead);
+	dbms_output.put_line('Name of the Project:        ' || i.prj_name);
+
+END LOOP;
+
+END;
+/
+
+6.10
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_emp IS SELECT name, designation from emp;
+
+BEGIN
+
+FOR i IN c_emp LOOP
+
+	dbms_output.put_line('Name:            ' || i.name);
+	dbms_output.put_line('Designation:     ' || i.designation);
+	dbms_output.put_line('Email Generated: ' || i.name || '.' || i.designation || '@digisoul.com');
+
+END LOOP;
+
+END;
+/
+
+6.11
+
+
+
+6.12
+
+
+
+6.13
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_emp(par_rating CHAR, par_clientID VARCHAR2)
+IS SELECT E.empcode Emp_code, name, designation
+FROM emp E, work_exp W
+WHERE E.empcode = W.empcode AND rating = par_rating AND clientid = par_clientID;
+
+BEGIN
+
+FOR i IN c_emp('&par_clientID', '&par_rating') LOOP
+
+dbms_output.put_line('Employee Code:        ' || i.Emp_code);
+dbms_output.put_line('Employee Name:        ' || i.name);
+dbms_output.put_line('Employee Designation: ' || i.designation);
+
+END LOOP;
+
+END;
+/
+
+6.14
+
+SET SERVEROUTPUT ON
+DECLARE
+
+CURSOR c_emp IS SELECT name, SUM(work_experience) total_work_experience FROM emp NATURAL JOIN work_exp GROUP BY name ORDER BY total_work_experience DESC;
+
+v_emp_name emp.name%type;
+v_work_exp work_exp.work_experience%type;
+i number(1) := 1;
+
+BEGIN
+
+OPEN c_emp;
+
+LOOP
+
+EXIT WHEN i > 5;
+FETCH c_emp INTO v_emp_name, v_work_exp;
+i := i + 1;
+dbms_output.put_line('--------------------');
+dbms_output.put_line('Employee Name: ' || v_emp_name);
+dbms_output.put_line('Total Work Experience: ' || v_work_exp);
+
+END LOOP;
+
+CLOSE c_emp;
+
+END;
+/

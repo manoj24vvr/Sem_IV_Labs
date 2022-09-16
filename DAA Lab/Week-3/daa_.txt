@@ -1,0 +1,267 @@
+insertion sort:
+#include<iostream>
+using namespace std;
+
+
+void insertion_sort(int n,int arr[]){
+    int i,key,j;
+    for(i=1;i<n;i++){
+        // unsorted list
+        key= arr[i];
+        j=i-1;
+
+        while(j>=0 && arr[j]>key){
+            arr[j+1] = arr[j];
+            j=j-1;
+        }
+        arr[j+1] = key;
+    }
+}
+
+
+void display(int n,int arr[]){
+    for(int i=0;i<n;i++){
+        cout<<arr[i]<<" ";
+
+    }cout<<endl;
+}
+
+int main(){
+
+
+    cout<<"Enter size of the array: "<<endl;
+    int size;
+    cin>>size;
+
+    int arr[size];
+
+    cout<<"Enter elements: "<<endl;
+    for(int i=0;i<size;i++){
+        cin>>arr[i];
+    }
+
+    
+
+    insertion_sort(size,arr);
+
+    cout<<"AFTER SORTING: "<<endl;
+    display(size,arr);
+
+
+    return 0;
+}
+
+
+Quick sort:
+
+#include <iostream>
+using namespace std;
+
+void swap(int *a, int *b) {
+  int t = *a;
+  *a = *b;
+  *b = t;
+}
+
+void SortedArray(int array[], int size) {
+  int i;
+  for (i = 0; i < size; i++)
+    cout << array[i] << " ";
+  cout << endl;
+}
+
+int partition(int array[], int low, int high) {
+    
+  int pivot = array[high];
+  
+  int i = (low - 1);
+
+  for (int j = low; j < high; j++) {
+    if (array[j] <= pivot) {
+
+      i++;
+      swap(&array[i], &array[j]);
+    }
+  }
+  
+  swap(&array[i + 1], &array[high]);
+  
+  return (i + 1);
+}
+
+void quickSort(int array[], int low, int high) {
+  if (low < high) {
+    int pi = partition(array, low, high);
+    quickSort(array, low, pi - 1);
+    quickSort(array, pi + 1, high);
+  }
+}
+
+int main() {
+	
+	cout<<"enter no of elements";
+	int size;
+	cin>>size;
+	int arr[size];
+	cout<<"enter elements: ";
+	for(int i=0 ; i< size ; i++){
+		cin>>arr[i];
+	}
+ 	 quickSort(arr, 0, size - 1);
+  
+ 	 cout << "Sorted array: ";
+	  SortedArray(arr, size);
+}
+
+
+BFS:
+
+#include<iostream>
+using namespace std;
+
+
+#define n 20
+/*
+Declaring the Global Variables
+*/
+
+int arr[n];
+int front = -1;
+int back = -1;
+
+/*
+			a b c d e f 
+*/
+
+void peek(){
+	if(front>back|| front ==-1){
+		cout<<"Queue is empty"<<endl;
+	}else{
+		cout<<"The peek element of the Queue is: "<<arr[front]<<endl;
+	}
+    
+}
+void enqueue(int push_ele){
+    back++;
+        arr[back]=push_ele;
+		if(front==-1){
+			front++;
+		}
+}
+
+
+void display(){
+	if(front==-1||front>back){
+		cout<<"Queue is empty"<<endl;
+	}
+    for(int i= front;i<=back;i++){
+        cout<<arr[i]<<" ";
+    }cout<<endl;
+}
+
+
+int dequeue(){
+    if(front>back|| front ==-1){
+		return -1;
+	}else{
+	    front++;
+		
+    	
+	}
+	return arr[front-1];
+}
+
+int isempty(){
+    if(front>back||front==-1){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+void isfull(){
+    if(back == n-1){
+        cout<<"Queue is full"<<endl;
+    }else{
+        cout<<"Queue is not full"<<endl;
+    }
+}
+
+int main(){
+
+    //BFS implementation
+
+    int visitState[6] = {0,0,0,0,0,0};      //state of visiting
+
+    int amat[6][6] = {  {0,0,1,1,1,0},{0,0,0,0,1,1},{1,0,0,1,0,1},{1,0,1,0,0,0},{1,1,0,0,0,1},{0,1,1,0,1,0} };     //adjacency matrix
+
+    int i=0;    //start node
+
+    cout<<"The BFS  of a given graph is: "<<endl;
+    cout<<i;
+    visitState[i] = 1;      // the starting node i is visited
+    enqueue(i);             // enqueued the starting node
+
+
+    while(!isempty()){
+    
+        
+        int node = dequeue();
+
+        for(int j=0;j<6;j++){
+            if(amat[node][j] == 1 && visitState[j]==0){         //node is unvisited and there is a link between node and j
+                cout<<" "<<j;
+                visitState[j]=1;        //making j node as visited
+                enqueue(j);
+
+            }
+        }
+
+    }
+
+
+}
+
+
+DFS:
+
+#include<iostream>
+using namespace std;
+#define size 6
+
+
+	int visited[size]={0,0,0,0,0,0};
+	
+	int graph[size][size] = {
+		
+	   {0, 1, 1, 1, 0, 0},
+	   {1, 0, 0, 1, 1, 0},
+	   {1, 0, 0, 1, 0, 1},
+	   {1, 1, 1, 0, 1, 1},
+	   {0, 1, 0, 1, 0, 1},
+	   {0, 0, 1, 1, 1, 0}
+	};
+	
+	void DFS (int i)
+	{
+		int j;
+		cout<<i<<endl;
+		visited[i]=1;
+		for(int j=1 ; j<size ; j++)
+		{
+			if(graph[i][j]==1 && !visited[j])
+			{
+				DFS(j);
+			}
+		}
+		
+		
+		
+	}
+int main()
+{
+	DFS(0);
+	return 0;
+
+	
+}

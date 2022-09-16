@@ -1,0 +1,428 @@
+create table EMP(
+EMPCODE number(3) CONSTRAINT PK_EMPNO Primary key,
+Name varchar2(10),
+QUALIFICATION varchar2(7) CONSTRAINT VALID_QUALIF check(Qualification in ('BTECH','MTECH','MSC','MCA','PHD')),
+PHONE number(10),
+EMAIL Varchar2(20) CONSTRAINT EMAIL_DOMAIN Check(Email like '%@digisol.com'),
+DESIGNATION VARCHAR2(20) CONSTRAINT VALID_DESIGNATION Check(DESIGNATION IN ('DEVELOPER','PROJECT LEADER','PROJECT MANAGER','TECHNICAL HEAD','PROJECT DIRECTOR','PROJECT LEADER','CEO')),
+SALARY NUMBER(7) CONSTRAINT SALARY_RANGE CHECK(salary between 97000 and 300000));
+
+
+
+create table family_dependents(
+EMPNO references EMP,
+DEP_NAME varchar(20),
+relationship varchar(16),
+age number(3) constraint valid_age check(age between 1 and 130),
+primary key(empno,dep_name));
+
+
+create table medical_policy(
+empno references emp,
+policyno varchar(7) constraint C_PNo check(policyno like 'MED%'),
+premium number(7) constraint C_P check(premium >1000),
+policydate date,
+constraint PK_MP primary key(empno,policyno));
+
+
+
+create table pay_check(
+empcode references emp,
+pay_date date,
+regular_increment number(4) constraint VALID_REGU_INCREMENT check(regular_increment in (2000,3000,5000,7000,9000)),
+performance_incentive number(5),
+DA number(7),
+PF number(6),
+other_incentives number(4),
+advanc_tax number(5),
+primary key(empcode,pay_date));
+
+
+create table skill(
+skillID char(3) CONSTRAINT UNQ_SKILLID primary key,
+SKILLNAME Varchar(20) CONSTRAINT UNQ_SKILLNAME UNIQUE);
+
+
+create table emp_skill(
+EMPNO number(3) CONSTRAINT FK_EMPNO References emp,
+skillID char(3) CONSTRAINT FK_SKILLID references skill on delete cascade,
+skill_experience number(3) check(skill_experience > 0));
+
+
+create table client(
+clientid char(3) constraint PK_CLIENTID primary key check(clientid like 'C%'),
+name varchar2(10),
+phone char(14) constraint phone_format check(phone like ('+91-%') or phone like ('+81-%') or phone like ('+31-%') or phone like ('+48-%') or phone like ('+44-%')));
+
+
+create table PRJ_DETAILS(
+PRJID char(3) CONSTRAINT PK_PRJID check(PRJID LIKE 'P%') Primary key,
+PRJ_NAME Varchar2(10),
+START_DATE Date,
+END_DATE Date,
+ACTUAL_END_DATE DATE,
+LEAD_BY_EMPCODE number(3) CONSTRAINT FK_LEAD_EMP References EMP,
+BUDGET_ALLOCATED number(10,1),
+ACTUAL_BUDGET number(10,1),
+CONSTRAINT END_DATE_GREATER_START_DATE CHECK(END_DATE > START_DATE),
+check(ACTUAL_END_DATE >= END_DATE));
+
+
+create table work_exp(
+empcode number(3) references emp,
+prjid char(3) references prj_details,
+work_experience number(2) check(work_experience >= 0) not null,
+clientid references client on delete set null,
+rating char(1) check(rating in ('A','B','C')),
+primary key(empcode,prjid));
+
+
+DESC emp;
+desc family_dependents;
+desc medical_policy;
+desc pay_check;
+desc skill;
+desc emp_skill;
+desc client;
+desc PRJ_DETAILS;
+
+1.1
+
+alter table emp
+add (reports_to constraint fk_reports_to_empcode references emp);
+
+1.2
+
+alter table skill
+add constraint skillid_start_with_S
+check(skillid like 'S%');
+
+1.3
+
+alter table emp_skill
+add constraint pk_empno_skillid
+primary key(empno,skillid);
+
+1.4
+
+alter table prj_details
+add constraint unq_PRJ_NAME
+UNIQUE(PRJ_NAME);
+
+1.5
+
+ALTER TABLE CLIENT
+ADD (EMAIL varchar(20) CONSTRAINT VALID_EMAIL CHECK(email like '%@.%3'));
+
+1.6
+
+alter table emp
+add constraint unq_phone
+unique(phone);
+
+1.7
+
+alter table emp
+add constraint UNique_email
+unique(email);
+
+1.8
+
+alter table medical_policy
+drop primary key;
+
+alter table medical_policy
+add constraint PK_MP
+primary key(empno,policyno,policydate);
+
+1.9
+
+alter table medical_policy
+drop constraint C_p;
+
+alter table medical_policy
+add constraint C_P
+check(premium > 1000);
+
+___________________________________________________________________________________________________________________
+
+2.0
+
+
+insert into EMP values(100,'RAJESH','BTECH',1234567890,'rajesh@digisol.com','DEVELOPER',100000,null);
+insert into EMP values(101,'RAVI','MTECH',1234567891,'ravi@digisol.com','PROJECT LEADER',110000,NULL);
+insert into EMP values(102,'VIJAY','BTECH',1234567892,'vijay@digisol.com','PROJECT MANAGER',120000,null);
+insert into EMP values(108,'AJAY','BTECH',1234567893,'ajay@digisol.com','TECHNICAL HEAD',130000,null);
+insert into EMP values(110,'BHASKAR','MTECH',1234567894,'bhaskar@digisol.com','PROJECT DIRECTOR',140000,null);
+insert into EMP values(106,'RAJ','MSC',1234567895,'raj@digisol.com','PROJECT LEADER',150000,null);
+insert into EMP values(105,'MANISH','MCA',1234567896,'manish@digisol.com','DEVELOPER',160000,null);
+
+insert into EMP values(106,'PRASAD','PHD',1234567897,'prasad@digisol.com','CEO',200000,null);
+ORA-00001: unique constraint (DSE108.PK_EMPNO) violated
+
+insert into EMP values(102,'RAKESH','MTECH',12345667898,'rakesh@digisol.com','DEVELOPER',160000,null);
+ORA-01438: value larger than specified precision allowed for this column
+
+insert into EMP values(108,'RAKESH','MTECH',1234567898,'rakesh@digisol.com','DEVELOPER',160000,null);
+ORA-00001: unique constraint (DSE108.PK_EMPNO) violated
+
+insert into EMP values(109,'VENKAT','MBA',1234567899,'venkat@digisol.com','PROJECT LEADER',110000,null);
+ORA-02290: check constraint (DSE108.VALID_QUALIF) violated
+
+insert into EMP values(110,'BALAJI','MBA',1234569871,'balaji@digisol.com','PROJECT DIRECTOR',140000,null);
+ORA-00001: unique constraint (DSE108.PK_EMPNO) violated
+
+insert into EMP values(111,'NIKHITH','BTECH',1236547895,'nikhith@digisol.com','TECHNICAL HEAD',130000,null);
+insert into EMP values(112,'PAVAN','MTECH',1236549876,'pavan@digisol.com','PROJECT MANAGER',150000,null);
+
+
+update emp set reports_to = 101 where empcode = 100;
+update emp set reports_to = 102 where empcode = 101;
+update emp set reports_to = 110 where empcode = 102;
+update emp set reports_to = 102 where empcode = 108;
+update emp set reports_to = 106 where empcode = 110;
+update emp set reports_to = 110 where empcode = 106;
+update emp set reports_to = 106 where empcode = 105;
+update emp set reports_to = 105 where empcode = 111;
+update emp set reports_to = 111 where empcode = 112;
+
+
+
+2.1
+
+insert into skill values('S1','Full Stack');
+insert into skill values('S2','Python');
+insert into skill values('S3','Java');
+insert into skill values('S4','C++');
+insert into skill values('S6','Oracle');
+insert into skill values('S7','Android');
+insert into skill values('S8','AZURE');
+insert into skill values('S9','DOT NET');
+insert into skill values('S10','IOS');
+insert into skill values('S11','ML');
+
+2.2
+
+insert into client values('C1','ABC','+48-87489389','aaa@abc.com');
+insert into client values('C2','LTS','+91-78389397','bbb@lts.com');
+insert into client values('C3','RK','+44-67838934','ccc@rk.com');
+insert into client values('C4','MMA','+31-77839093','ddd@mma.com');
+insert into client values('C5','AKS','+81-66822903','eee@aks.com');
+
+insert into client values('C6','GKS','+78-75628982','fff@gks.com');
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.PHONE_FORMAT) violated ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+insert into client values('C7','B&B','+91-64839839','ggg@bb.com');
+
+insert into client values('C8','ABT','+97-67554667',null);
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.PHONE_FORMAT) violated ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+insert into client values('C9','XYZ',null,'xyz.ab.com');
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.PHONE_FORMAT) violated ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+insert into client values('C8','GHS','+91-25369874','abc@hkd.com');
+
+
+2.3
+
+insert into emp_skill values(100,'S1',15);
+insert into emp_skill values(100,'S3',10);
+insert into emp_skill values(101,'S1',6);
+insert into emp_skill values(101,'S2',10);
+insert into emp_skill values(102,'S4',18);
+insert into emp_skill values(110,'S1',14);
+insert into emp_skill values(110,'S6',20);
+insert into emp_skill values(106,'S2',10);
+insert into emp_skill values(106,'S6',12);
+insert into emp_skill values(106,'S8',10);
+insert into emp_skill values(108,'S9',5);
+insert into emp_skill values(108,'S6',18);
+insert into emp_skill values(105,'S7',12);
+insert into emp_skill values(105,'S10',11);
+
+insert into emp_skill values(101,'S2',7);
+insert into emp_skill values(101,'S2',7)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (DSE108.PK_EMPNO_SKILLID) violated
+
+insert into emp_skill values(102,'S11',12);
+
+
+2.4
+
+insert into work_exp values(100,'P1',20,'C1','A');
+insert into work_exp values(100,'P3',15,'C3','A');
+insert into work_exp values(101,'P1',16,'C1','A');
+insert into work_exp values(102,'P2',18,'C2','B');
+insert into work_exp values(102,'P1',18,'C1','A');
+insert into work_exp values(108,'P2',12,'C2','C');
+insert into work_exp values(106,'P3',20,'C3','C');
+insert into work_exp values(106,'P4',10,'C4','C');
+insert into work_exp values(105,'P2',19,'C2','B');
+insert into work_exp values(110,'P4',12,'C4','B');
+insert into work_exp values(110,'P5',16,'C8','A');
+
+insert into work_exp values(105,'P5',5,'C5','D');
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.SYS_C0082728307) violated 
+ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+
+
+insert into work_exp values(111,'P5',5,'C5','C');
+insert into work_exp values(108,'P5',6,'C4','C');
+
+
+2.5
+
+insert into prj_details values('P1','SPYDER','10/Jan/2020','11/Oct/2022','12/Oct/2022',102,2000000,1990000);
+insert into prj_details values('P2','APOLLO','01-Jan-2019','10-Jul-2021','11-Jul-2021',108,3000000,3600000);
+insert into prj_details values('P3','UNICORN','03/Nov/2021','10/Oct/2023','10/Oct/2023',106,7500000,8000000);
+insert into prj_details values('P4','ZEUS','28/Feb/2020','09/Jun/2021','10/Jan/2022',110,5500000,5000000);
+insert into prj_details values('P5','JUPITER','07/Aug/2018','04/Feb/2020','01/Nov/2020',110,9000000,9000000);
+
+insert into prj_details values('P6','MARS','21/Feb/2022','07/Aug/2020','09/Dec/2020',135,8000000,9000000);
+insert into prj_details values('P6','MARS','21/Feb/2022','07/Aug/2020','09/Dec/2020',135,8000000,9000000)
+*
+ERROR at line 1:
+ORA-02290: check constraint (DSE108.END_DATE_GREATER_START_DATE) violated 
+
+insert into prj_details values(Null,'XXX','21/Feb/2019','08/Aug/2020','10/Dec/2020',138,8000000,9000000);
+insert into prj_details values(Null,'XXX','21/Feb/2019','08/Aug/2020','10/Dec/2020',138,8000000,9000000)
+                               *
+ERROR at line 1:
+ORA-01400: cannot insert NULL into ("DSE108"."PRJ_DETAILS"."PRJID")
+
+insert into prj_details values('P7','SATURN','21/Feb/2020','08/Aug/2021','10/Dec/2021',123,8500000,9400000);
+insert into prj_details values('P7','SATURN','21/Feb/2020','08/Aug/2021','10/Dec/2021',123,8500000,9400000)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DSE108.FK_LEAD_EMP) violated - parent key not 
+found 
+
+insert into prj_details values('P7','SATURN','21/Feb/2020','08/Aug/2021','10/Dec/2021',108,8500000,9400000);
+
+
+2.6
+
+
+insert into medical_policy values(100,'MED01',10000,'10/Dec/2020');
+insert into medical_policy values(101,'MED03',12000,'15/Dec/2020');
+insert into medical_policy values(100,'MED01',10000,'10/Jan/2021');
+insert into medical_policy values(101,'MED03',12000,'15/Oct/2021');
+insert into medical_policy values(103,'MED04',9000,'21/Jan/2021');
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DSE108.SYS_C0021417) violated - parent key not 
+found 
+
+insert into medical_policy values(102,'MED05',15000,'22/Jan/2021');
+
+
+2.7
+
+insert into family_dependents values(100,'AJITH','SON',12);
+insert into family_dependents values(100,'PRATHVI','DAUGHTER',9);
+insert into family_dependents values(101,'AARYA','DAUGHTER',17);
+insert into family_dependents values(101,'AKANKSH','SON',11);
+insert into family_dependents values(101,'ANITHA','SPOUSE',43);
+insert into family_dependents values(102,'ANIKET','BROTHER',25);
+
+2.8
+
+insert into pay_check values(100,'01/Dec/2020',2000,123,456,789,2500,5000);
+insert into pay_check values(101,'01/Dec/2020',3000,2400,5000,2300,5000,7000);
+insert into pay_check values(102,'01/Dec/2020',3000,2500,5400,2400,3600,7000);
+insert into pay_check values(100,'01/Jan/2021',3000,3000,4500,5000,450,4000);
+insert into pay_check values(101,'01/Jan/2021',5000,3500,4000,5500,2100,4000);
+insert into pay_check values(102,'01/Jan/2021',5000,3600,4600,5800,NULL,9000);
+
+insert into pay_check values(103,'02/Jan/2021',7000,2500,1400,3600,900,3000);
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (DSE108.SYS_C0020885) violated - parent key not 
+found 
+
+insert into pay_check values(108,'02/Jan/2021',7000,2500,1400,3600,900,3000);
+
+
+------------------------------------------------------------------------------------------------------
+
+
+2.9
+
+COMMIT;
+delete from emp where empcode = 100;
+
+ORA-02292: integrity constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.SYS_C0082728309) 
+	violated - child record found ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+# Foreign keys
+
+2.10
+
+update emp 
+set email = 'ajesh@digital.com' 
+where empcode = 111;
+
+ORA-02290: check constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.EMAIL_DOMAIN) violated ORA-06512:
+ at "SYS.DBMS_SQL", line 1721
+
+# @digisol.com
+
+2.11
+
+update work_emp 
+set prjid = 'P9'
+where empcode = 111;
+
+ORA-02291: integrity constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.SYS_C0082728310) violated - 
+	parent key not found ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+2.12
+
+select * from client;
+
+COMMIT;
+delete from client
+where clientid = 'C1';
+
+# Deletion successful
+
+2.13
+
+select * from family_dependents;
+COMMIT;
+delete from family_dependents
+where empno = 100;
+
+# Deletion successful - 2 rows
+
+ROLLBACK;
+
+2.14
+
+UPDATE EMP
+SET SALARY = SALARY *1.1
+WHERE DESIGNATION = 'DEVELOPER';
+
+# UPDATE SUCCESSFUL
+
+2.15
+
+UPDATE EMP
+SET REPORTS_TO = 106
+WHERE EMPCODE = 108;
+
+# UPDATE SUCCESSFUL
+
+2.16
+
+UPDATE EMP
+SET REPORTS_TO = 117
+WHERE EMPCODE = 108;
+
+ORA-02291: integrity constraint (SQL_DKVKNXXFOXGSVARGZKEUDECQK.FK_REPORTS_TO_EMPCODE) violated
+ - parent key not found ORA-06512: at "SYS.DBMS_SQL", line 1721
+
+# NO ROW IS UPDATED
